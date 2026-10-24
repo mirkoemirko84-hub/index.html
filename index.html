@@ -35,17 +35,11 @@
             text-transform: uppercase;
             margin: 0;
         }
-        /* FIXAÇÃO E TAMANHO EXATO DA TABELA DO BALCÃO */
-        #qrcodePuroSemMoldura { 
-            display: block !important;
-            margin: 20px auto !important;
-            width: 250px !important;
-            height: 250px !important;
-        }
-        #qrcodePuroSemMoldura table {
-            border: 0 !important;
-            border-collapse: collapse !important;
-            margin: 0 auto !important;
+        .quadrado-qrcode-fixo { 
+            display: block;
+            margin: 20px auto;
+            width: 250px;
+            height: 250px;
         }
         .tarja-seguranca-crua {
             background-color: #0d47a1;
@@ -58,6 +52,10 @@
             margin-top: 15px;
             text-align: center;
         }
+        @media print {
+            body { padding: 0; margin: 0; }
+            .tarja-seguranca-crua { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
     </style>
 </head>
 <body>
@@ -67,8 +65,8 @@
         <div class="sub-titulo">Mairiporã Agro — José Carlos Suguimoto</div>
     </div>
     
-    <!-- O QR Code será injetado diretamente aqui dentro como uma tabela de blocos -->
-    <div id="qrcodePuroSemMoldura"></div>
+    <!-- 🎯 QR CODE CORINGA GERADO EM INFRAESTRUTURA DE ALTA DISPONIBILIDADE -->
+    <img class="quadrado-qrcode-fixo" src="https://qrserver.com Agro5204000053039865802BR5921JOSE CARLOS SUGUIMOTO6009MAIRIPORA62230519JoseCarlosSuguimoto6304C2B6&ecc=M&margin=0" alt="Bradesco Pix Oficial">
     
     <div class="tarja-seguranca-crua">🛡️ LIQUIDAÇÃO REAL BCB TIMED</div>
     
@@ -76,5 +74,5 @@
         Aponte a câmera do celular para pagar o faturamento de balcão com Taxa Zero e Juros Zero
     </div>
 
-<script>
-    // 🎯 MOTOR GRÁFICO SEGURO EMBUTIDO - VERSÃO TABLE-RENDER COMPLETA
+</body>
+</html>
