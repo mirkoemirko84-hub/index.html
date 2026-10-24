@@ -35,17 +35,21 @@
             text-transform: uppercase;
             margin: 0;
         }
+        /* 🎯 TRAVA VISUAL EXPLICITA DA CAIXA GRÁFICA DO BALCÃO */
         #qrcodePuroSemMoldura { 
-            display: block;
-            margin: 20px auto;
-            width: 250px;
-            height: 250px;
-        }
-        #qrcodePuroSemMoldura img {
+            display: block !important;
+            margin: 20px auto !important;
             width: 250px !important;
             height: 250px !important;
-            display: block;
-            margin: 0 auto;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        #qrcodePuroSemMoldura table {
+            width: 250px !important;
+            height: 250px !important;
+            border: 0 !important;
+            border-collapse: collapse !important;
+            margin: 0 auto !important;
         }
         .tarja-seguranca-crua {
             background-color: #0d47a1;
@@ -67,7 +71,7 @@
         <div class="sub-titulo">Mairiporã Agro — José Carlos Suguimoto</div>
     </div>
     
-    <!-- Alvo do QR Code -->
+    <!-- Caixa Destino Fixada -->
     <div id="qrcodePuroSemMoldura"></div>
     
     <div class="tarja-seguranca-crua">🛡️ LIQUIDAÇÃO REAL BCB TIMED</div>
@@ -77,4 +81,4 @@
     </div>
 
 <script>
-    // 🎯 MOTOR GRÁFICO EMBUTIDO DIRETAMENTE NA RAIZ (AUTONOMIA TOTAL)
+    // MOTOR GRÁFICO SEGURO EMBUTIDO
