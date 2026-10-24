@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mairiporã Agro | Bradesco Pix Puro</title>
-    <!-- ENGINE GRÁFICA INTERNA EMBUTIDA CONTRA BLOQUEIOS DE CACHE -->
+    
+    <!-- 🎯 MOTOR GRÁFICO REAL LIBERADO E CORRIGIDO VIA CDN CONFIÁVEL -->
     <script src="https://cloudflare.com" integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4w9au64x7OqdMotc61g5HS6bxnh979O17NX12r563kTRvzg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    
     <style>
-        /* ARRANCADA TODA A MOLDURA, BORDAS E DECORAÇÕES DO CHASSI */
+        /* CHASSI TOTALMENTE LIMPO E ALINHADO PARA O BALCÃO */
         body { 
             background-color: #ffffff; 
             margin: 0; 
@@ -38,7 +40,7 @@
             text-transform: uppercase;
             margin: 0;
         }
-        /* DESENHO CRU SEM CAIXA PRETA OU CONTORNO AO REDOR */
+        /* ENCAIXE PERFEITO DO QR CODE SEM MOLDURAS */
         #qrcodePuroSemMoldura { 
             display: block;
             margin: 10px auto;
@@ -69,7 +71,7 @@
         <div class="sub-titulo">Mairiporã Agro — José Carlos Suguimoto</div>
     </div>
     
-    <!-- 🎯 ROTA 100% PUREZA GRÁFICA: REMOVIDA A MOLDURA E O CONTORNO PRETO -->
+    <!-- ELEMENTO ALVO DA INJEÇÃO GRÁFICA -->
     <div id="qrcodePuroSemMoldura"></div>
     
     <div class="tarja-seguranca-crua">🛡️ LIQUIDAÇÃO REAL BCB TIMED</div>
@@ -80,22 +82,29 @@
 
 <script>
     function fabricarDesenhoPixCoringa() {
-        // ### CHAVE DO SUGUIMOTO TERMINANDO EM C2B6 HIGIENIZADA NO CHIP ###
+        // ### STRING MESTRE TERMINANDO EM C2B6 HIGIENIZADA NO CHIP ###
         let stringChaveMestre = "00020126760014BR.GOV.BCB.PIX01363d4ee862-439d-481d-9f5b-07d69a7182f60214Mairipora Agro5204000053039865802BR5921JOSE CARLOS SUGUIMOTO6009MAIRIPORA62230519JoseCarlosSuguimoto6304C2B6";
         
-        document.getElementById("qrcodePuroSemMoldura").innerHTML = "";
-        new QRCode(document.getElementById("qrcodePuroSemMoldura"), {
-            text: stringChaveMestre,
-            width: 250,
-            height: 250,
-            colorDark : "#000000",
-            colorLight : "#ffffff",
-            correctLevel : QRCode.CorrectLevel.M
-        });
+        let container = document.getElementById("qrcodePuroSemMoldura");
+        if (container) {
+            container.innerHTML = "";
+            new QRCode(container, {
+                text: stringChaveMestre,
+                width: 250,
+                height: 250,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.M
+            });
+        }
     }
     
-    window.onload = fabricarDesenhoPixCoringa;
-    document.addEventListener("DOMContentLoaded", fabricarDesenhoPixCoringa);
+    // Executa imediatamente quando a estrutura DOM estiver pronta
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", fabricarDesenhoPixCoringa);
+    } else {
+        fabricarDesenhoPixCoringa();
+    }
 </script>
 </body>
 </html>
