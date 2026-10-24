@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mairiporã Agro | Bradesco Pix Impressão</title>
+    <title>Mairiporã Agro | Bradesco Pix Puro</title>
     <style>
         body { 
             background-color: #ffffff; 
             margin: 0; 
-            padding: 40px; 
+            padding: 20px; 
             display: flex; 
             flex-direction: column;
             align-items: center; 
@@ -19,44 +19,44 @@
         }
         .bloco-texto-topo {
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 15px;
         }
         .topo-titulo { 
-            font-size: 26px; 
+            font-size: 24px; 
             font-weight: 900; 
             color: #cc092f; 
             text-transform: uppercase; 
-            margin: 0 0 6px 0;
-            letter-spacing: 0.5px;
+            margin: 0 0 4px 0;
         }
         .sub-titulo {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: bold;
             color: #475569;
             text-transform: uppercase;
             margin: 0;
         }
-        .quadrado-qrcode-fixo { 
-            display: block;
-            margin: 20px auto;
-            width: 280px;
-            height: 280px;
+        /* FIXAÇÃO E TAMANHO EXATO DA TABELA DO BALCÃO */
+        #qrcodePuroSemMoldura { 
+            display: block !important;
+            margin: 20px auto !important;
+            width: 250px !important;
+            height: 250px !important;
+        }
+        #qrcodePuroSemMoldura table {
+            border: 0 !important;
+            border-collapse: collapse !important;
+            margin: 0 auto !important;
         }
         .tarja-seguranca-crua {
             background-color: #0d47a1;
             color: #ffffff;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: bold;
-            padding: 8px 16px;
+            padding: 6px 12px;
             border-radius: 4px;
             text-transform: uppercase;
-            margin-top: 25px;
+            margin-top: 15px;
             text-align: center;
-            letter-spacing: 0.5px;
-        }
-        @media print {
-            body { padding: 0; margin: 0; }
-            .tarja-seguranca-crua { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
     </style>
 </head>
@@ -67,14 +67,14 @@
         <div class="sub-titulo">Mairiporã Agro — José Carlos Suguimoto</div>
     </div>
     
-    <!-- 🎯 QR CODE EM IMAGEM PURA BASE64 (IMUNE A REDES E 100% OFFLINE) -->
-    <img class="quadrado-qrcode-fixo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAARgAAAEYAQMAAAB6S9InAAAABlBMVEX///8AAABVwtN+AAAACXBIWXMAAA7EAAAOxAGVKw4bAAACGUlEQVR4nO2YwY3DMAwF7UshKIRSCCpIoYMUgghSqCCFpIIDOfb6I9uWbUeW8wY96KMXrCgS+UuRor7+IofDwWAwGAwGg8FgMBisw7XvX32bH66pZ1f7uV0fT8H3vNfP6/p69n6Y/WreZp6VvXvGfQ288f6pntG6j3N1j/saeOP9Uz2jdR/n6h73NfDG+6d6Rus+ztU97mvgjfdP9YzWfZyreywGKzAWh8uGfN9V/x39H6L+fMeeNfC6M3O7uD+j96wXz38N3O7sZue+XdfX8PznwN3uzNzubn08Bd/zXvXffXfX9TX8/C/wupvd7L+7rn8NXO9m/+Y3vPlt/vPv4MVs5m63Xv9fAzFfA4vBYDAYDAaDwWAwGIzFYe7Wv/+XfS7Sg83c/XgKzn+gPZ6P6fGqXvG6m49v86pOzGaep8crehEebOYvH7e6pXf883GLWzEebOYXj1vdsX/vIuYrMBaHy7qveS/Sg8388u6XdxH9v6v99WfeF7P+bE8ZisN6XN2L9GAzc7v1+g/X8I7X/6hO9P97wXoxHovD6u7XvUgPNnO3W6//cA3veP2P6kT/vxesF+OxOKzufofidX8fHteb90R9vdvM8/0p/9v7fW1+BvM1sBgMBoPBYDAYDAaDwWAsDnO3fvS3Xv8BvD4X6bF+9B8BvD76D8W7Z7ze3fXv33rdM+5rIDmsh8FgMBgMBoPBYDAYDAbzP/AHVv2VvN7gZ3sAAAAASUVORK5CYII=" alt="Bradesco Pix Coringa Mairiporã Agro">
+    <!-- O QR Code será injetado diretamente aqui dentro como uma tabela de blocos -->
+    <div id="qrcodePuroSemMoldura"></div>
     
     <div class="tarja-seguranca-crua">🛡️ LIQUIDAÇÃO REAL BCB TIMED</div>
     
-    <div style="font-size: 12px; font-weight: bold; color: #444444; text-align: center; margin-top: 25px; max-width: 300px; line-height: 1.5;">
+    <div style="font-size: 11px; font-weight: bold; color: #555555; text-align: center; margin-top: 15px; max-width: 280px; line-height: 1.4;">
         Aponte a câmera do celular para pagar o faturamento de balcão com Taxa Zero e Juros Zero
     </div>
 
-</body>
-</html>
+<script>
+    // 🎯 MOTOR GRÁFICO SEGURO EMBUTIDO - VERSÃO TABLE-RENDER COMPLETA
