@@ -4,10 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mairiporã Agro | Bradesco Pix Puro</title>
-    
-    <!-- 🎯 MOTOR GRÁFICO CORRIGIDO COM INTEGRITY ATUALIZADO PARA O APANHADO REAL -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4w9au64x7OqdMotc61g5HS6bxnh979O17NX12r563kTRvzg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    
     <style>
         body { 
             background-color: #ffffff; 
@@ -42,9 +38,8 @@
         #qrcodePuroSemMoldura { 
             display: block;
             margin: 20px auto;
-            min-width: 250px;
-            min-height: 250px;
-            background-color: #fafafa; /* Fundo cinza bem claro temporário para checagem visual */
+            width: 250px;
+            height: 250px;
         }
         #qrcodePuroSemMoldura img {
             width: 250px !important;
@@ -82,45 +77,4 @@
     </div>
 
 <script>
-    function fabricarDesenhoPixCoringa() {
-        let stringChaveMestre = "00020126760014BR.GOV.BCB.PIX01363d4ee862-439d-481d-9f5b-07d69a7182f60214Mairipora Agro5204000053039865802BR5921JOSE CARLOS SUGUIMOTO6009MAIRIPORA62230519JoseCarlosSuguimoto6304C2B6";
-        
-        let container = document.getElementById("qrcodePuroSemMoldura");
-        if (container) {
-            container.innerHTML = "";
-            
-            // Tratamento caso a biblioteca externa falhe ou seja bloqueada pelo navegador
-            if (typeof QRCode === "undefined") {
-                container.innerHTML = "<p style='font-size:12px; color:red; text-align:center; padding-top:100px;'>Carregando motor gráfico básico...</p>";
-                // Tenta forçar o carregamento dinâmico sem travas de segurança
-                let scriptBackup = document.createElement("script");
-                scriptBackup.src = "https://jsdelivr.net";
-                scriptBackup.onload = function() {
-                    container.innerHTML = "";
-                    new QRCode(container, { text: stringChaveMestre, width: 250, height: 250 });
-                };
-                document.head.appendChild(scriptBackup);
-            } else {
-                // Rota normal limpa
-                new QRCode(container, {
-                    text: stringChaveMestre,
-                    width: 250,
-                    height: 250,
-                    colorDark : "#000000",
-                    colorLight : "#ffffff",
-                    correctLevel : QRCode.CorrectLevel.M
-                });
-            }
-        }
-    }
-
-    // Disparos alternativos para vencer qualquer lentidão de rede
-    window.onload = fabricarDesenhoPixCoringa;
-    if (document.readyState === "complete" || document.readyState === "interactive") {
-        fabricarDesenhoPixCoringa();
-    } else {
-        document.addEventListener("DOMContentLoaded", fabricarDesenhoPixCoringa);
-    }
-</script>
-</body>
-</html>
+    // 🎯 MOTOR GRÁFICO EMBUTIDO DIRETAMENTE NA RAIZ (AUTONOMIA TOTAL)
