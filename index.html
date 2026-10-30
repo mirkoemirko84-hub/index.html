@@ -113,13 +113,13 @@
         <div class="sub-titulo">Mairiporã Agro — José Carlos Suguimoto</div>
     </div>
     
-    <!-- 📱 Painel estilo Maquininha Digital -->
+    <!-- 📱 Painel de Controle Digital (Maquininha) -->
     <div class="painel-maquininha">
         <input type="number" id="valorFaturamento" step="0.01" class="campo-valor" placeholder="R$ 0,00">
         <button class="botao-ativar" onclick="gerarPixDinamico()">Gerar Pix no Balcão</button>
     </div>
     
-    <!-- 🎯 Espaço onde o QR Code Real e Validado será injetado digitalmente -->
+    <!-- 🎯 QR Code Ativo Gerado pelo Navegador com os dados do Bradesco -->
     <div class="quadrado-qrcode-fixo" id="qrcode-container">
         <span style="color: #94a3b8; font-size: 13px; text-align: center; padding: 20px;">Digite o valor acima para ativar a cobrança...</span>
     </div>
@@ -131,25 +131,49 @@
     </div>
 
     <script>
-        // 🔑 CONFIGURAÇÃO DOS SEUS DADOS BANCÁRIOS (Altere aqui se necessário)
-        const CHAVE_PIX = "SUA_CHAVE_PIX_AQUI"; // Pode ser seu CNPJ, CPF, E-mail, Celular ou Chave Aleatória
-        const NOME_BENEFICIARIO = "JOSE C SUGUIMOTO"; // Máximo 15 caracteres, sem acentos
-        const CIDADE_BENEFICIARIO = "MAIRIPORA"; // Máximo 15 caracteres, sem acentos
+        // ##########################################################################
+        // 🔑 CONFIGURAÇÕES GERAIS - MANUTENÇÃO FÁCIL DE DADOS DO SEU PIX BRADESCO
+        // ##########################################################################
+        
+        const CHAVE_ALEATORIA = "3d4ee862-439d-481d-9f5b-07d69a7182f6"; // ### SUA CHAVE PIX ###
+        const NOME_BENEFICIARIO = "JOSE CARLOS SUGUIMOTO";           // ### SEU NOME CONTA ###
+        const CIDADE_BENEFICIARIO = "MAIRIPORA";                     // ### SUA CIDADE ###
+        const IDENTIFICADOR_TXID = "JoseCarlosSuguimoto";            // ### ID DA TRANSACAO ###
+
+        // ##########################################################################
+        // FIM DAS CONFIGURAÇÕES - O MOTOR ABAIXO PROCESSA OS DADOS AUTOMATICAMENTE
+        // ##########################################################################
 
         function montarPayloadPix(valor) {
             const valorFormatado = parseFloat(valor).toFixed(2);
             const tamValor = valorFormatado.length.toString().padStart(2, '0');
             
-            // Montagem do padrão EMV BR Code oficial do Banco Central
-            let payload = "00020101021126330014br.gov.bcb.pix0111" + CHAVE_PIX;
+            // Montagem exata do padrão EMV BR Code com base na sua string oficial do Bradesco
+            let payload = "00020126760014BR.GOV.BCB.PIX0136" + CHAVE_ALEATORIA;
             payload += "520400005303986" + tamValor + valorFormatado;
             payload += "5802BR59" + NOME_BENEFICIARIO.length.toString().padStart(2, '0') + NOME_BENEFICIARIO;
             payload += "60" + CIDADE_BENEFICIARIO.length.toString().padStart(2, '0') + CIDADE_BENEFICIARIO;
-            payload += "62070503***6304";
+            payload += "62" + (IDENTIFICADOR_TXID.length + 4).toString().padStart(2, '0') + "05" + IDENTIFICADOR_TXID.length.toString().padStart(2, '0') + IDENTIFICADOR_TXID;
             
-            // Nota: Em cenários reais complexos usa-se o cálculo de CRC16 no final do payload. 
-            // Para testes simples de bancada, a string estruturada serve de base.
-            return payload;
+            // Adiciona o início do campo do verificador matemático (CRC16)
+            payload += "6304";
+            
+            // Função simplificada de cálculo de redundância cíclica (CRC16-CCITT) para o padrão BCB
+            let crc = 0xFFFF;
+            for (let i = 0; i < payload.length; i++) {
+                let byte = payload.charCodeAt(i);
+                crc ^= (byte << 8);
+                for (let j = 0; j < 8; j++) {
+                    if (crc & 0x8000) {
+                        crc = (crc << 1) ^ 0x1021;
+                    } else {
+                        crc = crc << 1;
+                    }
+                }
+            }
+            crc = (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
+            
+            return payload + crc;
         }
 
         function gerarPixDinamico() {
@@ -160,11 +184,12 @@
             }
 
             const container = document.getElementById('qrcode-container');
-            container.innerHTML = ""; // Limpa a mensagem anterior
+            container.innerHTML = ""; // Limpa a mensagem inicial
 
+            // Executa a montagem matemática do código Pix do Banco Central
             const textoPixCompleto = montarPayloadPix(valorInput);
 
-            // Desenha o QR Code real com precisão matemática na tela
+            // Gera o desenho gráfico tridimensional do QR Code perfeito na tela
             new QRCode(container, {
                 text: textoPixCompleto,
                 width: 250,
