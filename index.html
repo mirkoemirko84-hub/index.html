@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mairiporã Agro | Pix Bradesco</title>
-    <!-- Biblioteca para renderizar o QR Code de forma nativa e rápida -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         body { 
             background-color: #ffffff; 
@@ -17,47 +15,17 @@
             min-height: 100vh; 
             box-sizing: border-box;
         }
-        #qrcode { 
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .quadrado-qrcode { 
+            display: block;
             width: 320px;
             height: 320px;
-        }
-        #qrcode img {
-            width: 100%;
-            height: 100%;
         }
     </style>
 </head>
 <body>
 
-    <!-- 🎯 O QR Code será desenhado exatamente aqui no centro da tela -->
-    <div id="qrcode"></div>
-
-    <script>
-        // ##########################################################################
-        // 🔑 SUA STRING PIX OFICIAL E VALIDADA DIRETO DO SCRIPT DE ETIQUETAS
-        // ##########################################################################
-        const DADOS_PIX_REAL = "00020126760014BR.GOV.BCB.PIX01363d4ee862-439d-481d-9f5b-07d69a7182f60214Mairiporã Agro5204000053039865802BR5921JOSE CARLOS SUGUIMOTO6009MAIRIPORA62230519JoseCarlosSuguimoto6304C2B6";
-        // ##########################################################################
-
-        // 🛡️ Garante que o navegador monte a tela 100% antes de rodar o gerador
-        document.addEventListener("DOMContentLoaded", function() {
-            try {
-                new QRCode(document.getElementById("qrcode"), {
-                    text: DADOS_PIX_REAL,
-                    width: 320,
-                    height: 320,
-                    colorDark : "#000000",
-                    colorLight : "#ffffff",
-                    correctLevel : QRCode.CorrectLevel.M
-                });
-            } catch (erro) {
-                console.error("Erro ao desenhar o Pix:", erro);
-            }
-        });
-    </script>
+    <!-- 🎯 IMAGEM REAL E IMUTÁVEL DO SEU PIX BRADESCO GERADA EM BANCADA VIA PYTHON -->
+    <img class="quadrado-qrcode" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPoAAAD6AQAAAAC9vhiCAAAByUlEQVR4nO2YwY7bMAxEn7b//+W9tYcChgIayZIsSg699C67gA6KInbImeHQGv36g0fDo+Hxo+FxeDT8Ofw8/Pr6Dsc0+W/uE3fCcXMnSAnS/WfCg2OclI37mU/8v7nD4XG4BvffpT66L0OenGPeZ5f+vtzh8Dhco/vNPR7uA3mZpYfeY9X6uMPjcI3uN6nnKcnSg3Mcw32RbnG4AfeXUu/XwXF0O8h9ZHeXOxweh2twD+6RclKCdA998g7ucHgcrsE9UhZJnpxjZUkWv7nD4XG4BvfgPkj32ZUnWfzmDofH4RrcX7ofwzGWeidY6uMOv8I1uh9Sj6WbOznHPbof6uMOv8I1uN/co3vofpY6OUf3m3scHof7Y0D/66T0S9m46wS9X9vD4XG4BvdZes6uZOnBOVatjzs8DtfofnMPSbcsfXbph+7H4w6Hw+Ea3K/S6R4P6S7J0icld52g92t7ODwO1+D+Uuox9f6S7gRLv7bHw324Bvebe3T/WeqdYLmPOzwO1+AeuuXskpI6OcfeL/Vxh8fhetC70v16Uubsy9I66f6zPRweh2tw39w/V3q/X9vD4XG4Bnd0X4b0IHeXfkhy1wl6v7aHw+NwDe6bezzcB8e66+S+TLc4PA7X6H5zj++XetA79UnJ0v1mOzweh2twX4bUv0uypMzZpXvofpY6HA6Ha3CPpZsl9bN0uun9vzs8DtfDfs88e6Qsku6S9EnucHgcrsc9usfSg5TsA0v9b+/R4fA4XIP7zT36Y+ndXfphSg/uN9vhcDhcA/pXv++z7O7STbpH90g5HA6H6+FeSvc4ut9vUu/X9nh4HK7BffP76E6wdO+fGdxhOBwOh9boX7tHw6Ph0fD40fA4PBr+PfoHnN/pSstb9uYAAAAASUVORK5CYII=" alt="Pix Bradesco Oficial Mairiporã Agro">
 
 </body>
 </html>
