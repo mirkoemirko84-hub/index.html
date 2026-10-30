@@ -3,202 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mairiporã Agro | Bradesco Pix Puro</title>
-    <!-- Biblioteca segura para gerar QR Codes direto no navegador -->
+    <title>Mairiporã Agro | Pix Bradesco</title>
+    <!-- Biblioteca para renderizar o QR Code de forma nativa e rápida -->
     <script src="https://cloudflare.com"></script>
     <style>
         body { 
             background-color: #ffffff; 
             margin: 0; 
-            padding: 20px; 
+            padding: 0; 
             display: flex; 
-            flex-direction: column;
             align-items: center; 
             justify-content: center; 
             min-height: 100vh; 
             box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         }
-        .bloco-texto-topo {
-            text-align: center;
-            margin-bottom: 15px;
-        }
-        .topo-titulo { 
-            font-size: 24px; 
-            font-weight: 900; 
-            color: #cc092f; 
-            text-transform: uppercase; 
-            margin: 0 0 4px 0;
-        }
-        .sub-titulo {
-            font-size: 13px;
-            font-weight: bold;
-            color: #475569;
-            text-transform: uppercase;
-            margin: 0;
-        }
-        .painel-maquininha {
-            text-align: center;
-            margin: 15px auto;
-            width: 100%;
-            max-width: 280px;
-        }
-        .campo-valor {
-            width: 100%;
-            padding: 12px;
-            font-size: 1.5rem;
-            text-align: center;
-            font-weight: bold;
-            border-radius: 6px;
-            border: 2px solid #cbd5e1;
-            box-sizing: border-box;
-            margin-bottom: 10px;
-        }
-        .campo-valor:focus {
-            border-color: #cc092f;
-            outline: none;
-        }
-        .botao-ativar {
-            background-color: #cc092f;
-            color: white;
-            border: none;
-            padding: 12px;
-            font-size: 1rem;
-            font-weight: bold;
-            border-radius: 6px;
-            cursor: pointer;
-            width: 100%;
-            text-transform: uppercase;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .botao-ativar:hover {
-            background-color: #a80726;
-        }
-        .quadrado-qrcode-fixo { 
+        #qrcode { 
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 20px auto;
-            width: 250px;
-            height: 250px;
-            border: 1px solid #e2e8f0;
-            background-color: #fafafa;
+            width: 320px;
+            height: 320px;
         }
-        .quadrado-qrcode-fixo img {
+        #qrcode img {
             width: 100%;
             height: 100%;
-        }
-        .tarja-seguranca-crua {
-            background-color: #0d47a1;
-            color: #ffffff;
-            font-size: 12px;
-            font-weight: bold;
-            padding: 6px 12px;
-            border-radius: 4px;
-            text-transform: uppercase;
-            margin-top: 15px;
-            text-align: center;
-        }
-        @media print {
-            body { padding: 0; margin: 0; }
-            .tarja-seguranca-crua { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .painel-maquininha { display: none; }
         }
     </style>
 </head>
 <body>
 
-    <div class="bloco-texto-topo">
-        <div class="topo-titulo">Bradesco Pix Oficial</div>
-        <div class="sub-titulo">Mairiporã Agro — José Carlos Suguimoto</div>
-    </div>
-    
-    <!-- 📱 Painel de Controle Digital (Maquininha) -->
-    <div class="painel-maquininha">
-        <input type="number" id="valorFaturamento" step="0.01" class="campo-valor" placeholder="R$ 0,00">
-        <button class="botao-ativar" onclick="gerarPixDinamico()">Gerar Pix no Balcão</button>
-    </div>
-    
-    <!-- 🎯 QR Code Ativo Gerado pelo Navegador com os dados do Bradesco -->
-    <div class="quadrado-qrcode-fixo" id="qrcode-container">
-        <span style="color: #94a3b8; font-size: 13px; text-align: center; padding: 20px;">Digite o valor acima para ativar a cobrança...</span>
-    </div>
-    
-    <div class="tarja-seguranca-crua">🛡️ LIQUIDAÇÃO REAL BCB TIMED</div>
-    
-    <div style="font-size: 11px; font-weight: bold; color: #555555; text-align: center; margin-top: 15px; max-width: 280px; line-height: 1.4;">
-        Aponte a câmera do celular para pagar o faturamento de balcão com Taxa Zero e Juros Zero
-    </div>
+    <!-- 🎯 O QR Code será desenhado exatamente aqui no centro da tela -->
+    <div id="qrcode"></div>
 
     <script>
         // ##########################################################################
-        // 🔑 CONFIGURAÇÕES GERAIS - MANUTENÇÃO FÁCIL DE DADOS DO SEU PIX BRADESCO
+        // 🔑 SUA STRING PIX OFICIAL E VALIDADA DIRETO DO SCRIPT DE ETIQUETAS
         // ##########################################################################
-        
-        const CHAVE_ALEATORIA = "3d4ee862-439d-481d-9f5b-07d69a7182f6"; // ### SUA CHAVE PIX ###
-        const NOME_BENEFICIARIO = "JOSE CARLOS SUGUIMOTO";           // ### SEU NOME CONTA ###
-        const CIDADE_BENEFICIARIO = "MAIRIPORA";                     // ### SUA CIDADE ###
-        const IDENTIFICADOR_TXID = "JoseCarlosSuguimoto";            // ### ID DA TRANSACAO ###
-
-        // ##########################################################################
-        // FIM DAS CONFIGURAÇÕES - O MOTOR ABAIXO PROCESSA OS DADOS AUTOMATICAMENTE
+        const DADOS_PIX_REAL = "00020126760014BR.GOV.BCB.PIX01363d4ee862-439d-481d-9f5b-07d69a7182f60214Mairiporã Agro5204000053039865802BR5921JOSE CARLOS SUGUIMOTO6009MAIRIPORA62230519JoseCarlosSuguimoto6304C2B6";
         // ##########################################################################
 
-        function montarPayloadPix(valor) {
-            const valorFormatado = parseFloat(valor).toFixed(2);
-            const tamValor = valorFormatado.length.toString().padStart(2, '0');
-            
-            // Montagem exata do padrão EMV BR Code com base na sua string oficial do Bradesco
-            let payload = "00020126760014BR.GOV.BCB.PIX0136" + CHAVE_ALEATORIA;
-            payload += "520400005303986" + tamValor + valorFormatado;
-            payload += "5802BR59" + NOME_BENEFICIARIO.length.toString().padStart(2, '0') + NOME_BENEFICIARIO;
-            payload += "60" + CIDADE_BENEFICIARIO.length.toString().padStart(2, '0') + CIDADE_BENEFICIARIO;
-            payload += "62" + (IDENTIFICADOR_TXID.length + 4).toString().padStart(2, '0') + "05" + IDENTIFICADOR_TXID.length.toString().padStart(2, '0') + IDENTIFICADOR_TXID;
-            
-            // Adiciona o início do campo do verificador matemático (CRC16)
-            payload += "6304";
-            
-            // Função simplificada de cálculo de redundância cíclica (CRC16-CCITT) para o padrão BCB
-            let crc = 0xFFFF;
-            for (let i = 0; i < payload.length; i++) {
-                let byte = payload.charCodeAt(i);
-                crc ^= (byte << 8);
-                for (let j = 0; j < 8; j++) {
-                    if (crc & 0x8000) {
-                        crc = (crc << 1) ^ 0x1021;
-                    } else {
-                        crc = crc << 1;
-                    }
-                }
-            }
-            crc = (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
-            
-            return payload + crc;
-        }
-
-        function gerarPixDinamico() {
-            const valorInput = document.getElementById('valorFaturamento').value;
-            if (!valorInput || valorInput <= 0) {
-                alert("Por favor, digite um valor de faturamento válido.");
-                return;
-            }
-
-            const container = document.getElementById('qrcode-container');
-            container.innerHTML = ""; // Limpa a mensagem inicial
-
-            // Executa a montagem matemática do código Pix do Banco Central
-            const textoPixCompleto = montarPayloadPix(valorInput);
-
-            // Gera o desenho gráfico tridimensional do QR Code perfeito na tela
-            new QRCode(container, {
-                text: textoPixCompleto,
-                width: 250,
-                height: 250,
-                colorDark : "#000000",
-                colorLight : "#ffffff",
-                correctLevel : QRCode.CorrectLevel.M
-            });
-        }
+        // Desenha o QR Code perfeito e escaneável na tela do celular ou monitor
+        new QRCode(document.getElementById("qrcode"), {
+            text: DADOS_PIX_REAL,
+            width: 320,
+            height: 320,
+            colorDark : "#000000",
+            colorLight : "#ffffff",
+            correctLevel : QRCode.CorrectLevel.M
+        });
     </script>
 
 </body>
