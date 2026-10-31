@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mairiporã Agro | Bradesco Pix Puro</title>
+    <!-- 🛠️ MOTOR INDEPENDENTE DE DESENHO DO QR CODE -->
+    <script src="https://jsdelivr.net"></script>
     <style>
         body { 
             background-color: #f8fafc; 
@@ -122,16 +124,20 @@
             text-transform: uppercase;
         }
         .bloco-qrcode-real {
-            width: 220px;
-            height: 220px;
             margin: 0 auto 15px auto;
-            border: 1px solid #e2e8f0;
-            background-color: #ffffff;
-            box-sizing: border-box;
-            padding: 10px;
             display: flex;
             justify-content: center;
             align-items: center;
+            background: #fff;
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+            width: 220px;
+            height: 220px;
+            box-sizing: border-box;
+        }
+        .bloco-qrcode-real img {
+            width: 200px;
+            height: 200px;
         }
         .tarja-seguranca-crua {
             background-color: #0d47a1;
@@ -172,31 +178,63 @@
                 📢 Aponte a câmera do celular para pagar o faturamento de balcão com Taxa Zero e Juros Zero.
             </div>
             
-            <!-- 🎯 QR CODE ATUALIZADO EXCLUSIVAMENTE PARA: mirkoemirko84@gmail.com -->
-            <div class="bloco-qrcode-real">
-                <svg xmlns="http://w3.org" viewBox="0 0 29 29" shape-rendering="crispEdges" width="200" height="200">
-                    <path fill="#ffffff" d="M0 0h29v29H0z"/>
-                    <path fill="#000000" d="M0 0h7v7H0zm22 0h7v7h-7zM0 22h7v7H0zm9-22h2v1H9zm3 0h3v1h-3zm4 0h1v2h-1zm2 0h1v1h-1zm-9 1h1v1H9zm2 0h2v1h-2zm3 0h1v2h-1zm1 0h2v1h-2zm-6 1h2v1h-2zm4 0h1v1h-1zm3 0h1v2h-1zm-8 1h1v1H9zm2 0h3v1h-3zm4 0h1v1h-1zm1 0h2v1h-2zm-7 1h1v2H9zm3 0h1v1h-1zm2 0h1v1h-1zm1 0h1v1h-1zm2 0h1v1h-1zm-9 1h3v1H9zm4 0h4v1h-4zm-11 2h1v5H0zm2 0h3v1H2zm0 2h1v1H2zm2 0h1v1H4zm-2 2h3v1H2zm6-4h2v1H8zm3 0h1v2h-1zm3 0h1v1h-1zm1 0h3v1h-3zm3 0h2v1h-2zm-12 1h1v1H9zm4 0h1v1h-1zm2 0h2v1h-2zm5 0h1v2h-1zm-15 1h3v1H2zm4 0h1v1H6zm5 0h1v1h-1zm2 0h2v1h-2zm4 0h2v1h-2zm-14 1h1v2H3zm2 0h2v1H5zm2 0h1v1H7zm2 0h2v1H9zm3 0h3v1h-3zm4 0h2v1h-2zm-14 1h3v1H4zm5 0h1v1H9zm4 0h2v1h-2zm3 0h1v1h-1zm2 0h2v1h-2zm-19 2h1v5H0zm2 0h3v1H2zm0 2h1v1H2zm2 0h1v1H4zm-2 2h3v1H2zm6-4h1v1H8zm2 0h2v1h-2zm3 0h1v1h-1zm2 0h1v2h-1zm3 0h1v1h-1zm1 0h3v1h-3zm-11 1h2v1h-2zm5 0h1v1h-1zm5 0h1v1h-1zm-11 1h3v1H8zm4 0h1v1H12zm2 0h1v1h-1zm2 0h2v1h-2zm2 0h2v1h-2zm-11 1h1v1H9zm2 0h3v1h-3zm5 0h1v1h-1zm-19 2h1v5H0zm2 0h3v1H2zm0 2h1v1H2zm2 0h1v1H4zm-2 2h3v1H2zm6-4h1v1H8zm2 0h1v1h-1zm2 0h1v1h-1zm2 0h1v2h-1zm2 0h1v1h-1zm2 0h1v1h-1zm3 0h2v1h-2zm-12 1h2v1h-2zm4 0h1v1h-1zm4 0h1v1h-1zm-9 1h3v1H9zm5 0h1v1h-1zm2 0h2v1h-2zm1 0h2v1h-2zm-6 1h2v1h-2zm3 0h1v1h-1zm2 0h2v1h-2zM1 1h5v5H1zm21 0h5v5h-5zM1 23h5v5H1zm1 1h3v3H2zm21-23h3v3h-3zM3 3h1v1H3zm21 0h1v1h-24z"/>
-                </svg>
-            </div>
+            <!-- 🎯 ÁREA ONDE O SCRIPT VAI RECONSTRUIR O QR CODE OFICIAL BRASIL -->
+            <div id="qrcodeSpace" class="bloco-qrcode-real"></div>
             
             <div class="tarja-seguranca-crua">🛡️ LIQUIDAÇÃO REAL BCB TIMED</div>
         </div>
     </div>
 
     <script>
+        // Função auxiliar para calcular o CRC16 exigido pelo Banco Central
+        function calcularCRC16(str) {
+            var crc = 0xFFFF;
+            for (var c = 0; c < str.length; c++) {
+                crc ^= str.charCodeAt(c) << 8;
+                for (var i = 0; i < 8; i++) {
+                    if (crc & 0x8000) crc = (crc << 1) ^ 0x1021;
+                    else crc = crc << 1;
+                }
+            }
+            var hex = (crc & 0xFFFF).toString(16).toUpperCase();
+            return ("0000" + hex).slice(-4);
+        }
+
         function gerarPix() {
-            var valor = document.getElementById('valorVenda').value;
-            if (valor === "" || valor <= 0) {
+            var inputValor = document.getElementById('valorVenda').value;
+            if (inputValor === "" || inputValor <= 0) {
                 alert("Por favor, digite um valor válido para a venda!");
                 return;
             }
+
+            // Formata o valor exatamente com duas casas decimais (ex: 1.98)
+            var valorFormatado = parseFloat(inputValor).toFixed(2);
+
+            // Montagem do payload oficial no padrão Pix Estático do Banco Central (EMV)
+            var chave = "mirkoemirko84@gmail.com";
+            var merchantName = "JOSE C SUGUIMOTO";
+            var merchantCity = "MAIRIPORA";
+
+            var payload = "00020126" + String(chave.length + 22).padStart(2, '0') + "0014br.gov.bcb.pix01" + String(chave.length).padStart(2, '0') + chave;
+            payload += "52040000530398654" + String(valorFormatado.length).padStart(2, '0') + valorFormatado;
+            payload += "5802BR59" + String(merchantName.length).padStart(2, '0') + merchantName + "60" + String(merchantCity.length).padStart(2, '0') + merchantCity + "62070503***6304";
+            
+            // Completa com o dígito verificador de segurança obrigatório
+            var payloadCompleto = payload + calcularCRC16(payload);
+
+            // Aciona o gerador para criar a imagem do QR Code dinâmico
+            var qr = qrcode(0, 'M');
+            qr.addData(payloadCompleto);
+            qr.make();
+
+            document.getElementById('qrcodeSpace').innerHTML = qr.createImgTag(5, 10);
             document.getElementById('blocoQrCode').style.display = 'block';
         }
 
         function limparMaquininha() {
             document.getElementById('valorVenda').value = "";
             document.getElementById('blocoQrCode').style.display = 'none';
+            document.getElementById('qrcodeSpace').innerHTML = "";
         }
     </script>
 
