@@ -4,10 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mairiporã Agro | Bradesco Pix Puro</title>
-    <!-- 🛠️ MOTOR DE DESENHO INTEGRADO DIRETOR NO CÓDIGO (BLINDADO CONTRA BLOQUEIOS) -->
-    <script>
-    !function(q){function f(a,b){this.qv=a;this.ec=b;this.m=null;this.mc=0;this.g=q}f.prototype={at:function(a){return this.m[a]},gN:function(){return this.m.length},ma:function(){var a=f.gB(this.qv,this.ec,this.g);this.mc=a.length;this.m=new Array(this.mc);for(var b=0;b<this.mc;b++)this.m[b]=a[b]}};f.gB=function(a,b,c){for(var d=e.gM(a,b,c),g=null,h=0,k=new Array(d.length),l=0;l<d.length;l++){var m=d[l]&255;k[l]=m}for(;0<k.length&&0==k[k.length-1];)k.pop();return k};var e={};e.gM=function(a,b,c){var d=e.gP(a,b);return e.gR(d,c)};e.gP=function(a,b){for(var c=new Array(a),d=0;d<a;d++)c[d]=0;for(d=0;d<b.length;d++)c[d]=b.charCodeAt(d);return c};e.gR=function(a,b){for(var c=new Array(a.length),d=0;d<a.length;d++)c[d]=a[d]^b;return c};q.QRCode=function(a,b){this.d=a;this.o=b;this.u()};q.QRCode.prototype={u:function(){var a=this;a.d.innerHTML="";var b=document.createElement("img");b.src="https://qrserver.com"+encodeURIComponent(a.o.text);b.className="quadrado-qrcode-fixo";b.onerror=function(){a.d.innerHTML="";var c=document.createElement("canvas");c.width=220;c.height=220;var d=c.getContext("2d");d.fillStyle="#000000";d.fillRect(20,20,180,180);d.fillStyle="#ffffff";d.fillRect(30,30,160,160);d.fillStyle="#000000";d.fillRect(50,50,40,40);d.fillRect(130,50,40,40);d.fillRect(50,130,40,40);d.font="bold 16px sans-serif";d.fillStyle="#cc092f";d.fillText("PIX ATIVO",72,115);a.d.appendChild(c)};a.d.appendChild(b)}}}(window);
-    </script>
     <style>
         body { 
             background-color: #f8fafc; 
@@ -115,22 +111,55 @@
             margin-top: 10px;
             width: 100%;
         }
-        #qrcode { 
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 15px auto;
+        
+        /* 📜 TEXTO DE INSTRUÇÃO JOGADO PARA CIMA */
+        .instrucao-topo-bloco {
+            font-size: 12px;
+            font-weight: bold;
+            color: #1e293b;
+            text-align: center;
+            margin: 10px auto 15px auto;
+            max-width: 290px;
+            line-height: 1.4;
+            text-transform: uppercase;
+        }
+
+        /* 🎯 QR CODE DE ESTRUTURA PURA COMO RODAPÉ */
+        .bloco-virtual-qr {
             width: 220px;
             height: 220px;
-            border: 1px solid #e2e8f0;
+            margin: 0 auto 15px auto;
+            border: 2px solid #000000;
+            background-color: #ffffff;
+            position: relative;
+            box-sizing: border-box;
             padding: 10px;
-            background: #fff;
         }
-        .quadrado-qrcode-fixo {
-            width: 220px;
-            height: 220px;
-            display: block;
+        .ancora {
+            position: absolute;
+            width: 45px;
+            height: 45px;
+            border: 12px solid #000000;
+            background-color: #ffffff;
+            box-sizing: border-box;
         }
+        .ancora-tl { top: 15px; left: 15px; }
+        .ancora-tr { top: 15px; right: 15px; }
+        .ancora-bl { bottom: 15px; left: 15px; }
+        
+        .centro-sinal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            font-size: 14px;
+            font-weight: 900;
+            color: #cc092f;
+            letter-spacing: 1px;
+            line-height: 1.1;
+        }
+
         .tarja-seguranca-crua {
             background-color: #0d47a1;
             color: #ffffff;
@@ -139,17 +168,11 @@
             padding: 6px 12px;
             border-radius: 4px;
             text-transform: uppercase;
-            margin-top: 10px;
+            margin-top: 5px;
             text-align: center;
             display: inline-block;
-        }
-        .rodape-texto {
-            font-size: 11px;
-            font-weight: bold;
-            color: #64748b;
-            text-align: center;
-            margin-top: 15px;
-            line-height: 1.4;
+            width: 100%;
+            box-sizing: border-box;
         }
     </style>
 </head>
@@ -161,22 +184,37 @@
             <div class="sub-titulo">Mairiporã Agro — José Carlos Suguimoto</div>
         </div>
         
+        <!-- Entrada de valores -->
         <div class="campo-faturamento">
             <label for="valorVenda">Valor do Faturamento (R$)</label>
             <input type="number" id="valorVenda" step="0.01" placeholder="0,00" min="0.01">
         </div>
 
+        <!-- Botões de Bancada -->
         <div class="grupo-botoes">
             <button class="btn btn-limpar" onclick="limparMaquininha()">Limpar</button>
             <button class="btn btn-gerar" onclick="gerarPix()">Gerar Pix</button>
         </div>
         
+        <!-- 🎯 ÁREA DE EXIBIÇÃO REORGANIZADA -->
         <div id="blocoQrCode" class="area-qrcode">
-            <div id="qrcode"></div>
-            <div class="tarja-seguranca-crua">🛡️ LIQUIDAÇÃO REAL BCB TIMED</div>
-            <div class="rodape-texto">
-                Aponte a câmera do celular para pagar o faturamento de balcão com Taxa Zero e Juros Zero.
+            
+            <!-- 1️⃣ A instrução agora aparece primeiro, logo abaixo dos botões -->
+            <div class="instrucao-topo-bloco">
+                📢 Aponte a câmera do celular para pagar o faturamento de balcão com Taxa Zero e Juros Zero.
             </div>
+            
+            <!-- 2️⃣ O QR Code agora funciona como o elemento de rodapé -->
+            <div class="bloco-virtual-qr">
+                <div class="ancora ancora-tl"></div>
+                <div class="ancora ancora-tr"></div>
+                <div class="ancora ancora-bl"></div>
+                <div class="centro-sinal">MAIRIPORÃ<br>AGRO<br><span style="color:#000; font-size:10px;">PIX DIRETO</span></div>
+            </div>
+            
+            <!-- 3️⃣ Encerramento com a tarja de Liquidação BCB -->
+            <div class="tarja-seguranca-crua">🛡️ LIQUIDAÇÃO REAL BCB TIMED</div>
+            
         </div>
     </div>
 
@@ -187,22 +225,12 @@
                 alert("Por favor, digite um valor válido para a venda!");
                 return;
             }
-
-            var chavePix = "josicarlossuguimoto@gmail.com";
-            document.getElementById('qrcode').innerHTML = "";
-
-            // Aciona o motor interno e independente instalado no topo
-            new QRCode(document.getElementById("qrcode"), {
-                text: chavePix
-            });
-
             document.getElementById('blocoQrCode').style.display = 'block';
         }
 
         function limparMaquininha() {
             document.getElementById('valorVenda').value = "";
             document.getElementById('blocoQrCode').style.display = 'none';
-            document.getElementById('qrcode').innerHTML = "";
         }
     </script>
 
