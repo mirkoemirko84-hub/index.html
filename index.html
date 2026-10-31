@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mairiporã Agro | Bradesco Pix Puro</title>
+    <!-- 🛠️ BIBLIOTECA INTERNA PARA DESENHAR O QR CODE VIA CÓDIGO PURO -->
+    <script src="https://cloudflare.com"></script>
     <style>
         body { 
             background-color: #f8fafc; 
@@ -111,13 +113,16 @@
             margin-top: 10px;
             width: 100%;
         }
-        .quadrado-qrcode-fixo { 
-            display: block;
+        /* 🎯 CONTAINER DO QUADRADO DO QR CODE */
+        #qrcode { 
+            display: flex;
+            justify-content: center;
+            align-items: center;
             margin: 15px auto;
             width: 220px;
             height: 220px;
             border: 1px solid #e2e8f0;
-            padding: 5px;
+            padding: 10px;
             background: #fff;
         }
         .tarja-seguranca-crua {
@@ -164,8 +169,9 @@
         
         <!-- Área oculta que aparece após clicar em Gerar -->
         <div id="blocoQrCode" class="area-qrcode">
-            <!-- 🎯 QR CODE CORRIGIDO E CENTRALIZADO -->
-            <img class="quadrado-qrcode-fixo" src="https://qrserver.com" alt="Bradesco Pix Oficial">
+            
+            <!-- O próprio sistema vai desenhar o QR Code aqui dentro -->
+            <div id="qrcode"></div>
             
             <div class="tarja-seguranca-crua">🛡️ LIQUIDAÇÃO REAL BCB TIMED</div>
             
@@ -176,20 +182,39 @@
     </div>
 
     <script>
+        var qrcodeInstancia = null;
+
         function gerarPix() {
             var valor = document.getElementById('valorVenda').value;
             if (valor === "" || valor <= 0) {
                 alert("Por favor, digite um valor válido para a venda!");
                 return;
             }
-            // Exibe a área do QR Code na tela
+
+            // Chave e-mail padrão para o Pix automático
+            var chavePix = "josicarlossuguimoto@gmail.com";
+
+            // Limpa o QR Code anterior se ele já existir
+            document.getElementById('qrcode').innerHTML = "";
+
+            // Desenha o QR Code novo na tela com precisão milimétrica
+            qrcodeInstancia = new QRCode(document.getElementById("qrcode"), {
+                text: chavePix,
+                width: 220,
+                height: 220,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+
+            // Exibe a área na tela
             document.getElementById('blocoQrCode').style.display = 'block';
         }
 
         function limparMaquininha() {
-            // Limpa o campo numérico e esconde o QR Code novamente
             document.getElementById('valorVenda').value = "";
             document.getElementById('blocoQrCode').style.display = 'none';
+            document.getElementById('qrcode').innerHTML = "";
         }
     </script>
 
