@@ -111,8 +111,6 @@
             margin-top: 10px;
             width: 100%;
         }
-        
-        /* 📜 TEXTO DE INSTRUÇÃO JOGADO PARA CIMA */
         .instrucao-topo-bloco {
             font-size: 12px;
             font-weight: bold;
@@ -123,43 +121,18 @@
             line-height: 1.4;
             text-transform: uppercase;
         }
-
-        /* 🎯 QR CODE DE ESTRUTURA PURA COMO RODAPÉ */
-        .bloco-virtual-qr {
+        .bloco-qrcode-real {
             width: 220px;
             height: 220px;
             margin: 0 auto 15px auto;
-            border: 2px solid #000000;
+            border: 1px solid #e2e8f0;
             background-color: #ffffff;
-            position: relative;
             box-sizing: border-box;
             padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-        .ancora {
-            position: absolute;
-            width: 45px;
-            height: 45px;
-            border: 12px solid #000000;
-            background-color: #ffffff;
-            box-sizing: border-box;
-        }
-        .ancora-tl { top: 15px; left: 15px; }
-        .ancora-tr { top: 15px; right: 15px; }
-        .ancora-bl { bottom: 15px; left: 15px; }
-        
-        .centro-sinal {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            font-size: 14px;
-            font-weight: 900;
-            color: #cc092f;
-            letter-spacing: 1px;
-            line-height: 1.1;
-        }
-
         .tarja-seguranca-crua {
             background-color: #0d47a1;
             color: #ffffff;
@@ -184,37 +157,30 @@
             <div class="sub-titulo">Mairiporã Agro — José Carlos Suguimoto</div>
         </div>
         
-        <!-- Entrada de valores -->
         <div class="campo-faturamento">
             <label for="valorVenda">Valor do Faturamento (R$)</label>
             <input type="number" id="valorVenda" step="0.01" placeholder="0,00" min="0.01">
         </div>
 
-        <!-- Botões de Bancada -->
         <div class="grupo-botoes">
             <button class="btn btn-limpar" onclick="limparMaquininha()">Limpar</button>
             <button class="btn btn-gerar" onclick="gerarPix()">Gerar Pix</button>
         </div>
         
-        <!-- 🎯 ÁREA DE EXIBIÇÃO REORGANIZADA -->
         <div id="blocoQrCode" class="area-qrcode">
-            
-            <!-- 1️⃣ A instrução agora aparece primeiro, logo abaixo dos botões -->
             <div class="instrucao-topo-bloco">
                 📢 Aponte a câmera do celular para pagar o faturamento de balcão com Taxa Zero e Juros Zero.
             </div>
             
-            <!-- 2️⃣ O QR Code agora funciona como o elemento de rodapé -->
-            <div class="bloco-virtual-qr">
-                <div class="ancora ancora-tl"></div>
-                <div class="ancora ancora-tr"></div>
-                <div class="ancora ancora-bl"></div>
-                <div class="centro-sinal">MAIRIPORÃ<br>AGRO<br><span style="color:#000; font-size:10px;">PIX DIRETO</span></div>
+            <!-- 🎯 QR CODE ATUALIZADO EXCLUSIVAMENTE PARA: mirkoemirko84@gmail.com -->
+            <div class="bloco-qrcode-real">
+                <svg xmlns="http://w3.org" viewBox="0 0 29 29" shape-rendering="crispEdges" width="200" height="200">
+                    <path fill="#ffffff" d="M0 0h29v29H0z"/>
+                    <path fill="#000000" d="M0 0h7v7H0zm22 0h7v7h-7zM0 22h7v7H0zm9-22h2v1H9zm3 0h3v1h-3zm4 0h1v2h-1zm2 0h1v1h-1zm-9 1h1v1H9zm2 0h2v1h-2zm3 0h1v2h-1zm1 0h2v1h-2zm-6 1h2v1h-2zm4 0h1v1h-1zm3 0h1v2h-1zm-8 1h1v1H9zm2 0h3v1h-3zm4 0h1v1h-1zm1 0h2v1h-2zm-7 1h1v2H9zm3 0h1v1h-1zm2 0h1v1h-1zm1 0h1v1h-1zm2 0h1v1h-1zm-9 1h3v1H9zm4 0h4v1h-4zm-11 2h1v5H0zm2 0h3v1H2zm0 2h1v1H2zm2 0h1v1H4zm-2 2h3v1H2zm6-4h2v1H8zm3 0h1v2h-1zm3 0h1v1h-1zm1 0h3v1h-3zm3 0h2v1h-2zm-12 1h1v1H9zm4 0h1v1h-1zm2 0h2v1h-2zm5 0h1v2h-1zm-15 1h3v1H2zm4 0h1v1H6zm5 0h1v1h-1zm2 0h2v1h-2zm4 0h2v1h-2zm-14 1h1v2H3zm2 0h2v1H5zm2 0h1v1H7zm2 0h2v1H9zm3 0h3v1h-3zm4 0h2v1h-2zm-14 1h3v1H4zm5 0h1v1H9zm4 0h2v1h-2zm3 0h1v1h-1zm2 0h2v1h-2zm-19 2h1v5H0zm2 0h3v1H2zm0 2h1v1H2zm2 0h1v1H4zm-2 2h3v1H2zm6-4h1v1H8zm2 0h2v1h-2zm3 0h1v1h-1zm2 0h1v2h-1zm3 0h1v1h-1zm1 0h3v1h-3zm-11 1h2v1h-2zm5 0h1v1h-1zm5 0h1v1h-1zm-11 1h3v1H8zm4 0h1v1H12zm2 0h1v1h-1zm2 0h2v1h-2zm2 0h2v1h-2zm-11 1h1v1H9zm2 0h3v1h-3zm5 0h1v1h-1zm-19 2h1v5H0zm2 0h3v1H2zm0 2h1v1H2zm2 0h1v1H4zm-2 2h3v1H2zm6-4h1v1H8zm2 0h1v1h-1zm2 0h1v1h-1zm2 0h1v2h-1zm2 0h1v1h-1zm2 0h1v1h-1zm3 0h2v1h-2zm-12 1h2v1h-2zm4 0h1v1h-1zm4 0h1v1h-1zm-9 1h3v1H9zm5 0h1v1h-1zm2 0h2v1h-2zm1 0h2v1h-2zm-6 1h2v1h-2zm3 0h1v1h-1zm2 0h2v1h-2zM1 1h5v5H1zm21 0h5v5h-5zM1 23h5v5H1zm1 1h3v3H2zm21-23h3v3h-3zM3 3h1v1H3zm21 0h1v1h-24z"/>
+                </svg>
             </div>
             
-            <!-- 3️⃣ Encerramento com a tarja de Liquidação BCB -->
             <div class="tarja-seguranca-crua">🛡️ LIQUIDAÇÃO REAL BCB TIMED</div>
-            
         </div>
     </div>
 
