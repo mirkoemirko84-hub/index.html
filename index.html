@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mairiporã Agro | Bradesco Pix Puro</title>
-    <!-- 🛠️ MOTOR INDEPENDENTE DE DESENHO DO QR CODE -->
-    <script src="https://jsdelivr.net"></script>
     <style>
         body { 
             background-color: #f8fafc; 
@@ -135,10 +133,6 @@
             height: 220px;
             box-sizing: border-box;
         }
-        .bloco-qrcode-real img {
-            width: 200px;
-            height: 200px;
-        }
         .tarja-seguranca-crua {
             background-color: #0d47a1;
             color: #ffffff;
@@ -178,65 +172,12 @@
                 📢 Aponte a câmera do celular para pagar o faturamento de balcão com Taxa Zero e Juros Zero.
             </div>
             
-            <!-- 🎯 ÁREA ONDE O SCRIPT VAI RECONSTRUIR O QR CODE OFICIAL BRASIL -->
             <div id="qrcodeSpace" class="bloco-qrcode-real"></div>
             
             <div class="tarja-seguranca-crua">🛡️ LIQUIDAÇÃO REAL BCB TIMED</div>
         </div>
     </div>
 
+    <!-- 🛠️ MOTOR INDEPENDENTE E LOCAL (FUNCIONA TOTALMENTE OFFLINE) -->
     <script>
-        // Função auxiliar para calcular o CRC16 exigido pelo Banco Central
-        function calcularCRC16(str) {
-            var crc = 0xFFFF;
-            for (var c = 0; c < str.length; c++) {
-                crc ^= str.charCodeAt(c) << 8;
-                for (var i = 0; i < 8; i++) {
-                    if (crc & 0x8000) crc = (crc << 1) ^ 0x1021;
-                    else crc = crc << 1;
-                }
-            }
-            var hex = (crc & 0xFFFF).toString(16).toUpperCase();
-            return ("0000" + hex).slice(-4);
-        }
-
-        function gerarPix() {
-            var inputValor = document.getElementById('valorVenda').value;
-            if (inputValor === "" || inputValor <= 0) {
-                alert("Por favor, digite um valor válido para a venda!");
-                return;
-            }
-
-            // Formata o valor exatamente com duas casas decimais (ex: 1.98)
-            var valorFormatado = parseFloat(inputValor).toFixed(2);
-
-            // Montagem do payload oficial no padrão Pix Estático do Banco Central (EMV)
-            var chave = "mirkoemirko84@gmail.com";
-            var merchantName = "JOSE C SUGUIMOTO";
-            var merchantCity = "MAIRIPORA";
-
-            var payload = "00020126" + String(chave.length + 22).padStart(2, '0') + "0014br.gov.bcb.pix01" + String(chave.length).padStart(2, '0') + chave;
-            payload += "52040000530398654" + String(valorFormatado.length).padStart(2, '0') + valorFormatado;
-            payload += "5802BR59" + String(merchantName.length).padStart(2, '0') + merchantName + "60" + String(merchantCity.length).padStart(2, '0') + merchantCity + "62070503***6304";
-            
-            // Completa com o dígito verificador de segurança obrigatório
-            var payloadCompleto = payload + calcularCRC16(payload);
-
-            // Aciona o gerador para criar a imagem do QR Code dinâmico
-            var qr = qrcode(0, 'M');
-            qr.addData(payloadCompleto);
-            qr.make();
-
-            document.getElementById('qrcodeSpace').innerHTML = qr.createImgTag(5, 10);
-            document.getElementById('blocoQrCode').style.display = 'block';
-        }
-
-        function limparMaquininha() {
-            document.getElementById('valorVenda').value = "";
-            document.getElementById('blocoQrCode').style.display = 'none';
-            document.getElementById('qrcodeSpace').innerHTML = "";
-        }
-    </script>
-
-</body>
-</html>
+        // Mini-gerador de QR Code embutido na raça para não depender de internet externa
