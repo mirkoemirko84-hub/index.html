@@ -11,6 +11,7 @@
     <style>
         body { background-color: #f8fafc; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
         .container { background-color: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); max-width: 380px; width: 100%; display: flex; flex-direction: column; align-items: center; box-sizing: border-box; }
+        .tarja-seguranca-topo { background-color: #0d47a1; color: #ffffff; font-size: 11px; font-weight: bold; padding: 8px 12px; border-radius: 4px; text-transform: uppercase; margin-bottom: 15px; text-align: center; display: inline-block; width: 100%; box-sizing: border-box; }
         .bloco-texto-topo { text-align: center; margin-bottom: 15px; }
         .topo-titulo { font-size: 22px; font-weight: 900; color: #cc092f; text-transform: uppercase; margin: 0 0 4px 0; }
         .sub-titulo { font-size: 12px; font-weight: bold; color: #475569; text-transform: uppercase; margin: 0; }
@@ -24,13 +25,15 @@
         .btn-limpar { background-color: #e2e8f0; color: #475569; }
         .area-qrcode { display: none; text-align: center; margin-top: 10px; width: 100%; box-sizing: border-box; }
         .instrucao-topo-bloco { font-size: 11px; font-weight: bold; color: #1e293b; text-align: center; margin: 10px auto 12px auto; max-width: 320px; line-height: 1.4; text-transform: uppercase; }
-        .bloco-qrcode-real { margin: 0 auto 12px auto; display: flex; justify-content: center; align-items: center; background: #fff; padding: 5px; border: 1px solid #e2e8f0; width: 220px; height: 220px; min-height: 220px; box-sizing: border-box; }
+        .bloco-qrcode-real { margin: 0 auto 5px auto; display: flex; justify-content: center; align-items: center; background: #fff; padding: 5px; border: 1px solid #e2e8f0; width: 220px; height: 220px; min-height: 220px; box-sizing: border-box; }
         .bloco-qrcode-real table { border-collapse: collapse; border: none; margin: auto; }
-        .tarja-seguranca-crua { background-color: #0d47a1; color: #ffffff; font-size: 11px; font-weight: bold; padding: 8px 12px; border-radius: 4px; text-transform: uppercase; margin-top: 5px; text-align: center; display: inline-block; width: 100%; box-sizing: border-box; }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- 🛡️ VALIDADOR JOGADO LÁ PARA CIMA ANTES DE TUDO -->
+        <div class="tarja-seguranca-topo">🛡️ LIQUIDAÇÃO REAL BCB TIMED</div>
+
         <div class="bloco-texto-topo">
             <div class="topo-titulo">Bradesco Pix Oficial</div>
             <div class="sub-titulo">Mairiporã Agro — José Carlos Suguimoto</div>
@@ -46,7 +49,6 @@
         <div id="blocoQrCode" class="area-qrcode">
             <div class="instrucao-topo-bloco">📢 Aponte a câmera do celular para pagar o faturamento de balcão.</div>
             <div id="qrcodeSpace" class="bloco-qrcode-real"></div>
-            <div class="tarja-seguranca-crua">🛡️ LIQUIDAÇÃO REAL BCB TIMED</div>
         </div>
     </div>
 
