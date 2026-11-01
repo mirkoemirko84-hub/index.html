@@ -25,13 +25,17 @@
         .btn-limpar { background-color: #e2e8f0; color: #475569; }
         .area-qrcode { display: none; text-align: center; margin-top: 5px; width: 100%; box-sizing: border-box; }
         .instrucao-topo-bloco { font-size: 11px; font-weight: 900; color: #1e293b; text-align: center; margin: 5px auto 10px auto; text-transform: uppercase; letter-spacing: 0.5px; }
-        .bloco-qrcode-real { margin: 0 auto; display: flex; justify-content: center; align-items: center; background: #fff; padding: 5px; border: 1px solid #e2e8f0; width: 210px; height: 210px; min-height: 210px; box-sizing: border-box; }
-        .bloco-qrcode-real table { border-collapse: collapse; border: none; margin: auto; }
+        
+        /* 📐 MOLDURA AJUSTADA PARA FICAR 100% ALINHADA COM O DESENHO */
+        .bloco-qrcode-real { margin: 0 auto; display: flex; justify-content: center; align-items: center; background: #fff; padding: 8px; border: 1px solid #e2e8f0; width: 220px; height: 220px; box-sizing: border-box; }
+        
+        /* Força a tabela a preencher a moldura inteira sem sobras laterais */
+        .bloco-qrcode-real table { width: 100% !important; height: 100% !important; border-collapse: collapse; border: none; table-layout: fixed; }
+        .bloco-qrcode-real td { padding: 0; margin: 0; border: none; }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- 🛡️ VALIDADOR SEGURO NO TOPO -->
         <div class="tarja-seguranca-topo">🛡️ LIQUIDAÇÃO REAL BCB TIMED</div>
 
         <div class="bloco-texto-topo">
@@ -47,7 +51,6 @@
             <button class="btn btn-gerar" onclick="gerarPix()">Gerar Pix</button>
         </div>
         <div id="blocoQrCode" class="area-qrcode">
-            <!-- 📢 INDICADOR VISUAL COMPACTO COM MÃOZINHA -->
             <div class="instrucao-topo-bloco">👉 ESCANEIE PARA PAGAR 👈</div>
             <div id="qrcodeSpace" class="bloco-qrcode-real"></div>
         </div>
@@ -81,25 +84,24 @@
             var payloadCompleto = payloadLivre + calcularCRC16(payloadLivre);
             var qrcodeSpace = document.getElementById("qrcodeSpace");
             qrcodeSpace.innerHTML = ""; 
+            
             var qr = new QRCodeMinimal(7, 'M');
             qr.addData(payloadCompleto);
             qr.make();
+
             var tabela = document.createElement("table");
-            tabela.style.borderCollapse = "collapse";
-            tabela.style.border = "none";
-            tabela.style.margin = "auto";
-            var tamanhoModulo = Math.floor(190 / qr.moduleCount);
+
             for (var r = 0; r < qr.moduleCount; r++) {
                 var linha = document.createElement("tr");
                 for (var c = 0; c < qr.moduleCount; c++) {
                     var celula = document.createElement("td");
-                    celula.style.width = tamanhoModulo + "px";
-                    celula.style.height = tamanhoModulo + "px";
+                    // 🚀 RETIRADOS OS TAMANHOS FIXOS EM PX: A TABELA SE ADAPTA RELEVO POR RELEVO
                     celula.style.backgroundColor = qr.modules[r][c] ? "#000000" : "#ffffff";
                     linha.appendChild(celula);
                 }
                 tabela.appendChild(linha);
             }
+
             qrcodeSpace.appendChild(tabela);
             document.getElementById("blocoQrCode").style.display = "block";
         }
