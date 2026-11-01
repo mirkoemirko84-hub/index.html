@@ -75,9 +75,9 @@
             var valorFormatado = valor.toFixed(2);
             var chavePix = "3d4ee862-439d-481d-9f5b-07d69a7182f6"; 
             
-            // 🚀 MANOBRA DE PRECISÃO: CABEÇALHO 0136 EXATO PARA VALIDAÇÃO DA CHAVE ALEATÓRIA LONGA NO BCB
+            // 🚀 ALINHAMENTO GEOMÉTRICO DO PAYLOAD: CONTA DE 54 CARACTERES (0014 + 26 + 54)
             var MerchantAccount = "0014br.gov.bcb.pix0136" + chavePix;
-            var payloadLivre = "00020126" + String(MerchantAccount.length).padStart(2, '0') + MerchantAccount + "52040000530398654" + String(valorFormatado.length).padStart(2, '0') + valorFormatado + "5802BR5921JOSE CARLOS SUGUIMOTO6009MAIRIPORA62070503***6304";
+            var payloadLivre = "0002012654" + MerchantAccount + "52040000530398654" + String(valorFormatado.length).padStart(2, '0') + valorFormatado + "5802BR5921JOSE CARLOS SUGUIMOTO6009MAIRIPORA62070503***6304";
             
             var payloadCompleto = payloadLivre + calcularCRC16(payloadLivre);
             var qrcodeSpace = document.getElementById("qrcodeSpace");
