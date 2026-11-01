@@ -10,21 +10,22 @@
     </script>
     <style>
         body { background-color: #f8fafc; margin: 0; padding: 5px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-        .container { background-color: #ffffff; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); max-width: 360px; width: 100%; display: flex; flex-direction: column; align-items: center; box-sizing: border-box; }
-        .tarja-seguranca-topo { background-color: #0d47a1; color: #ffffff; font-size: 10px; font-weight: bold; padding: 6px 10px; border-radius: 4px; text-transform: uppercase; margin-bottom: 12px; text-align: center; display: inline-block; width: 100%; box-sizing: border-box; letter-spacing: 0.5px; }
-        .bloco-texto-topo { text-align: center; margin-bottom: 12px; }
-        .topo-titulo { font-size: 20px; font-weight: 900; color: #cc092f; text-transform: uppercase; margin: 0 0 2px 0; }
-        .sub-titulo { font-size: 11px; font-weight: bold; color: #475569; text-transform: uppercase; margin: 0; }
-        .campo-faturamento { width: 100%; margin-bottom: 12px; box-sizing: border-box; }
-        .campo-faturamento label { display: block; font-size: 10px; font-weight: bold; color: #475569; margin-bottom: 4px; text-transform: uppercase; }
-        .campo-faturamento input { width: 100%; padding: 10px; font-size: 18px; font-weight: bold; border: 2px solid #e2e8f0; border-radius: 6px; box-sizing: border-box; text-align: center; color: #1e293b; }
+        /* 📐 AJUSTADO PARA O FORMATO EXATO DE UM CARTÃO DE VISITA (5x9cm) */
+        .container { background-color: #ffffff; padding: 12px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); max-width: 340px; width: 100%; display: flex; flex-direction: column; align-items: center; box-sizing: border-box; }
+        .tarja-seguranca-topo { background-color: #0d47a1; color: #ffffff; font-size: 9px; font-weight: bold; padding: 5px 8px; border-radius: 4px; text-transform: uppercase; margin-bottom: 10px; text-align: center; display: inline-block; width: 100%; box-sizing: border-box; letter-spacing: 0.5px; }
+        .bloco-texto-topo { text-align: center; margin-bottom: 10px; }
+        .topo-titulo { font-size: 18px; font-weight: 900; color: #cc092f; text-transform: uppercase; margin: 0 0 2px 0; }
+        .sub-titulo { font-size: 10px; font-weight: bold; color: #475569; text-transform: uppercase; margin: 0; }
+        .campo-faturamento { width: 100%; margin-bottom: 10px; box-sizing: border-box; }
+        .campo-faturamento label { display: block; font-size: 9px; font-weight: bold; color: #475569; margin-bottom: 4px; text-transform: uppercase; }
+        .campo-faturamento input { width: 100%; padding: 8px; font-size: 16px; font-weight: bold; border: 2px solid #e2e8f0; border-radius: 6px; box-sizing: border-box; text-align: center; color: #1e293b; }
         .campo-faturamento input:focus { border-color: #cc092f; outline: none; }
-        .grupo-botoes { display: flex; gap: 8px; width: 100%; margin-bottom: 12px; }
-        .btn { flex: 1; padding: 10px; font-size: 12px; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; transition: background 0.2s; }
+        .grupo-botoes { display: flex; gap: 6px; width: 100%; margin-bottom: 10px; }
+        .btn { flex: 1; padding: 10px; font-size: 11px; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; transition: background 0.2s; }
         .btn-gerar { background-color: #cc092f; color: #ffffff; }
         .btn-limpar { background-color: #e2e8f0; color: #475569; }
         .area-qrcode { display: none; text-align: center; margin-top: 5px; width: 100%; box-sizing: border-box; }
-        .bloco-qrcode-real { margin: 5px auto 0 auto; display: flex; justify-content: center; align-items: center; background: #fff; padding: 10px; border: 1px solid #e2e8f0; width: 220px; height: 220px; box-sizing: border-box; }
+        .bloco-qrcode-real { margin: 5px auto 0 auto; display: flex; justify-content: center; align-items: center; background: #fff; padding: 6px; border: 1px solid #e2e8f0; width: 200px; height: 200px; box-sizing: border-box; }
         .bloco-qrcode-real table { width: 100% !important; height: 100% !important; border-collapse: collapse; border: none; table-layout: fixed; }
         .bloco-qrcode-real td { padding: 0; margin: 0; border: none; }
     </style>
@@ -71,9 +72,10 @@
                 return;
             }
             var valorFormatado = valor.toFixed(2);
+            var chavePix = "3d4ee862-439d-481d-9f5b-07d69a7182f6"; 
             
-            // 🚀 A JUNÇÃO PERFEITA DO TOPO DO PDF: CONTA COM 76 CARACTERES EXATOS (2676)
-            var MerchantAccount = "0014BR.GOV.BCB.PIX01363d4ee862-439d-481d-9f5b-07d69a7182f60214Mairiporã Agro";
+            // 🚀 CORREÇÃO CIRÚRGICA: ADICIONADO O PADRÃO EM LETRAS MAIÚSCULAS EXATO DO SEU PDF (BR.GOV.BCB.PIX)
+            var MerchantAccount = "0014BR.GOV.BCB.PIX0136" + chavePix + "0214Mairiporã Agro";
             var payloadLivre = "0002012676" + MerchantAccount + "52040000530398654" + String(valorFormatado.length).padStart(2, '0') + valorFormatado + "5802BR5921JOSE CARLOS SUGUIMOTO6009MAIRIPORA62070503***6304";
             
             var payloadCompleto = payloadLivre + calcularCRC16(payloadLivre);
