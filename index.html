@@ -24,8 +24,7 @@
         .btn-gerar { background-color: #cc092f; color: #ffffff; }
         .btn-limpar { background-color: #e2e8f0; color: #475569; }
         .area-qrcode { display: none; text-align: center; margin-top: 5px; width: 100%; box-sizing: border-box; }
-        .instrucao-topo-bloco { font-size: 11px; font-weight: 900; color: #1e293b; text-align: center; margin: 5px auto 10px auto; text-transform: uppercase; letter-spacing: 0.5px; }
-        .bloco-qrcode-real { margin: 0 auto; display: flex; justify-content: center; align-items: center; background: #fff; padding: 10px; border: 1px solid #e2e8f0; width: 220px; height: 220px; box-sizing: border-box; }
+        .bloco-qrcode-real { margin: 5px auto 0 auto; display: flex; justify-content: center; align-items: center; background: #fff; padding: 10px; border: 1px solid #e2e8f0; width: 220px; height: 220px; box-sizing: border-box; }
         .bloco-qrcode-real table { width: 100% !important; height: 100% !important; border-collapse: collapse; border: none; table-layout: fixed; }
         .bloco-qrcode-real td { padding: 0; margin: 0; border: none; }
     </style>
@@ -46,7 +45,7 @@
             <button class="btn btn-gerar" onclick="gerarPix()">Gerar Pix</button>
         </div>
         <div id="blocoQrCode" class="area-qrcode">
-            <div class="instrucao-topo-bloco">👉 ESCANEIE PARA PAGAR 👈</div>
+            <!-- 🚀 FRASE REMOVIDA PARA ISOLAMENTO TOTAL DO ENCAIXE GRÁFICO -->
             <div id="qrcodeSpace" class="bloco-qrcode-real"></div>
         </div>
     </div>
@@ -75,9 +74,9 @@
             var valorFormatado = valor.toFixed(2);
             var chavePix = "3d4ee862-439d-481d-9f5b-07d69a7182f6"; 
             
-            // 🚀 ALINHAMENTO GEOMÉTRICO DO PAYLOAD: CONTA DE 54 CARACTERES (0014 + 26 + 54)
+            // 🛠️ ALINHAMENTO MILIMÉTRICO DO PADRÃO EMV PARA CHAVE EVP COM TRAÇOS
             var MerchantAccount = "0014br.gov.bcb.pix0136" + chavePix;
-            var payloadLivre = "0002012654" + MerchantAccount + "52040000530398654" + String(valorFormatado.length).padStart(2, '0') + valorFormatado + "5802BR5921JOSE CARLOS SUGUIMOTO6009MAIRIPORA62070503***6304";
+            var payloadLivre = "0002012658" + MerchantAccount + "52040000530398654" + String(valorFormatado.length).padStart(2, '0') + valorFormatado + "5802BR5921JOSE CARLOS SUGUIMOTO6009MAIRIPORA62070503***6304";
             
             var payloadCompleto = payloadLivre + calcularCRC16(payloadLivre);
             var qrcodeSpace = document.getElementById("qrcodeSpace");
