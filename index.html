@@ -45,7 +45,6 @@
             <button class="btn btn-gerar" onclick="gerarPix()">Gerar Pix</button>
         </div>
         <div id="blocoQrCode" class="area-qrcode">
-            <!-- 🚀 FRASE REMOVIDA PARA ISOLAMENTO TOTAL DO ENCAIXE GRÁFICO -->
             <div id="qrcodeSpace" class="bloco-qrcode-real"></div>
         </div>
     </div>
@@ -72,11 +71,10 @@
                 return;
             }
             var valorFormatado = valor.toFixed(2);
-            var chavePix = "3d4ee862-439d-481d-9f5b-07d69a7182f6"; 
             
-            // 🛠️ ALINHAMENTO MILIMÉTRICO DO PADRÃO EMV PARA CHAVE EVP COM TRAÇOS
-            var MerchantAccount = "0014br.gov.bcb.pix0136" + chavePix;
-            var payloadLivre = "0002012658" + MerchantAccount + "52040000530398654" + String(valorFormatado.length).padStart(2, '0') + valorFormatado + "5802BR5921JOSE CARLOS SUGUIMOTO6009MAIRIPORA62070503***6304";
+            // 🚀 A JUNÇÃO PERFEITA DO TOPO DO PDF: CONTA COM 76 CARACTERES EXATOS (2676)
+            var MerchantAccount = "0014BR.GOV.BCB.PIX01363d4ee862-439d-481d-9f5b-07d69a7182f60214Mairiporã Agro";
+            var payloadLivre = "0002012676" + MerchantAccount + "52040000530398654" + String(valorFormatado.length).padStart(2, '0') + valorFormatado + "5802BR5921JOSE CARLOS SUGUIMOTO6009MAIRIPORA62070503***6304";
             
             var payloadCompleto = payloadLivre + calcularCRC16(payloadLivre);
             var qrcodeSpace = document.getElementById("qrcodeSpace");
