@@ -63,6 +63,12 @@
             return ("0000" + hex).slice(-4);
         }
 
+        function limparMaquininha() {
+            document.getElementById("valorVenda").value = "";
+            document.getElementById("blocoQrCode").style.display = "none";
+            document.getElementById("qrcodeSpace").innerHTML = "";
+        }
+
         function gerarPix() {
             var campoValor = document.getElementById("valorVenda");
             var valor = parseFloat(campoValor.value);
@@ -96,12 +102,6 @@
             }
             qrcodeSpace.appendChild(tabela);
             document.getElementById("blocoQrCode").style.display = "block";
-        }
-
-        function limparMaquininha() {
-            document.getElementById("valorVenda").value = "";
-            document.getElementById("blocoQrCode").style.display = "none";
-            document.getElementById("qrcodeSpace").innerHTML = "";
         }
     </script>
 </body>
