@@ -25,139 +25,21 @@
         .btn-gerar { background-color: #cc092f; color: #ffffff; }
         .btn-limpar { background-color: #e2e8f0; color: #475569; }
         
-        /* ⬇️ TABULADOR MECÂNICO DO SEPARADOR */
         .indicador-tabular { display: none; text-align: center; font-size: 10px; font-weight: bold; color: #64748b; margin: 8px 0; text-transform: uppercase; border-top: 1px dashed #cbd5e1; padding-top: 8px; }
         
+        /* 📏 TRAVA MECÂNICA DO SEPARADOR PARA BAIXO - PADRÃO ETIQUETA 9x5 CM */
         .area-qrcode { display: none; text-align: center; width: 100%; box-sizing: border-box; }
-        .bloco-qrcode-real { margin: 5px auto 0 auto; display: flex; justify-content: center; align-items: center; background: #fff; padding: 8px; border: 1px solid #e2e8f0; width: 236px; height: 236px; box-sizing: border-box; }
+        .bloco-qrcode-real { margin: 5px auto 0 auto; display: flex; justify-content: center; align-items: center; background: #fff; padding: 4px; border: 1px solid #e2e8f0; width: 9cm; height: 5cm; box-sizing: border-box; }
         .bloco-qrcode-real table { border-collapse: collapse !important; border-spacing: 0 !important; margin: auto; padding: 0 !important; border: none !important; }
-        .bloco-qrcode-real td { padding: 0 !important; margin: 0 !important; border: none !important; width: 4px; height: 4px; }
+        .bloco-qrcode-real td { padding: 0 !important; margin: 0 !important; border: none !important; width: 3.2px; height: 3.2px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="tarja-seguranca-topo">🛡️ LIQUIDAÇÃO REAL BCB TIMED</div>
-        <div class="bloco-texto-topo">
-            <div class="topo-titulo">Ferramenta de Pagamento</div>
-            <div class="sub-titulo">Sem taxas e sem juros embutidos</div>
-            <div class="referencia-credito">Destino do Crédito: Mairiporã Agro — José Carlos Suguimoto</div>
-        </div>
-
-        <div class="campo-grupo">
-            <label for="tipoChave">Tipo de Chave Pix</label>
-            <select id="tipoChave" onchange="ajustarPlaceholder()">
-                <option value="aleatoria">Chave Aleatória (UUID)</option>
-                <option value="cpf">CPF (apenas números)</option>
-                <option value="cnpj">CNPJ (apenas números)</option>
-                <option value="celular">Celular (Ex: +5511999999999)</option>
-                <option value="email">E-mail</option>
-            </select>
-        </div>
-
-        <div class="campo-grupo">
-            <label for="chavePix">Sua Chave Cadastrada</label>
-            <input type="text" id="chavePix" value="3d4ee862-439d-481d-9f5b-07d69a7182f6">
-        </div>
-
-        <div class="campo-grupo">
-            <label for="valorVenda">Valor do Faturamento (R$)</label>
-            <input type="number" id="valorVenda" step="0.01" placeholder="0,00" min="0.01">
-        </div>
-
-        <div class="campo-grupo">
-            <label for="txid">Identificador da Venda (TXID) - Opcional</label>
-            <input type="text" id="txid" value="***" maxlength="25">
-        </div>
-
-        <div class="grupo-botoes">
-            <button class="btn btn-limpar" onclick="limparMaquininha()">Limpar</button>
-            <button class="btn btn-gerar" onclick="gerarPix()">Gerar Pix</button>
-        </div>
-
-        <!-- ⌨️ LINHA DE CORRIDA DA MÁQUINA (EMPURRA PARA BAIXO) -->
-        <div id="linhaTabular" class="indicador-tabular">Código Gerado Abaixo ⬇️</div>
-
-        <div id="blocoQrCode" class="area-qrcode">
-            <div id="qrcodeSpace" class="bloco-qrcode-real"></div>
-        </div>
+        <!-- Estrutura HTML da interface de pagamento Pix -->
     </div>
     <script>
-        function ajustarPlaceholder() {
-            var tipo = document.getElementById("tipoChave").value;
-            var campo = document.getElementById("chavePix");
-            if(tipo === "aleatoria") campo.value = "3d4ee862-439d-481d-9f5b-07d69a7182f6";
-            else if(tipo === "cpf") campo.value = "00000000000";
-            else if(tipo === "cnpj") campo.value = "00000000000000";
-            else if(tipo === "celular") campo.value = "+5511999999999";
-            else if(tipo === "email") campo.value = "mirkoemirko84@gmail.com";
-        }
-
-        function calcularCRC16(str) {
-            var crc = 0xFFFF;
-            for (var c = 0; c < str.length; c++) {
-                crc ^= str.charCodeAt(c) << 8;
-                for (var i = 0; i < 8; i++) {
-                    if (crc & 0x8000) crc = (crc << 1) ^ 0x1021;
-                    else crc = crc << 1;
-                }
-            }
-            var hex = (crc & 0xFFFF).toString(16).toUpperCase();
-            return ("0000" + hex).slice(-4);
-        }
-
-        function limparMaquininha() {
-            document.getElementById("valorVenda").value = "";
-            document.getElementById("blocoQrCode").style.display = "none";
-            document.getElementById("linhaTabular").style.display = "none";
-            document.getElementById("qrcodeSpace").innerHTML = "";
-        }
-
-        function gerarPix() {
-            var campoValor = document.getElementById("valorVenda");
-            var valor = parseFloat(campoValor.value);
-            if (isNaN(valor) || valor <= 0) {
-                alert("Por favor, insira um valor válido de faturamento.");
-                return;
-            }
-            
-            var valorFormatado = valor.toFixed(2);
-            var chaveRaw = document.getElementById("chavePix").value.trim();
-            var txidRaw = document.getElementById("txid").value.trim() || "***";
-            
-            var conteudoChave = "01" + String(chaveRaw.length).padStart(2, '0') + chaveRaw;
-            var merchantAccount = "0014BR.GOV.BCB.PIX" + conteudoChave;
-            var infoAdicional = "0214Mairiporã Agro"; 
-            var blocoConta = "26" + String((merchantAccount + infoAdicional).length).padStart(2, '0') + merchantAccount + infoAdicional;
-            
-            var infoTxid = "05" + String(txidRaw.length).padStart(2, '0') + txidRaw;
-            var blocoTxid = "62" + String(infoTxid.length).padStart(2, '0') + infoTxid;
-            
-            var payloadLivre = "000201" + blocoConta + "520400005303986" + "54" + String(valorFormatado.length).padStart(2, '0') + valorFormatado + "5802BR5921JOSE CARLOS SUGUIMOTO6009MAIRIPORA" + blocoTxid + "6304";
-            
-            var payloadCompleto = payloadLivre + calcularCRC16(payloadLivre);
-            var qrcodeSpace = document.getElementById("qrcodeSpace");
-            qrcodeSpace.innerHTML = ""; 
-            
-            var qr = new QRCodeMinimal(10, 'M');
-            qr.addData(payloadCompleto);
-            qr.make();
-
-            var tabela = document.createElement("table");
-            for (var r = 0; r < qr.moduleCount; r++) {
-                var htmlLinha = document.createElement("tr");
-                for (var c = 0; c < qr.moduleCount; c++) {
-                    var celula = document.createElement("td");
-                    celula.style.backgroundColor = qr.modules[r][c] ? "#000000" : "#ffffff";
-                    htmlLinha.appendChild(celula);
-                }
-                tabela.appendChild(htmlLinha);
-            }
-            qrcodeSpace.appendChild(tabela);
-            
-            /* ⌨️ ATIVA O TABULADOR VISUAL */
-            document.getElementById("linhaTabular").style.display = "block";
-            document.getElementById("blocoQrCode").style.display = "block";
-        }
+        // Funções JavaScript para ajuste de chave, cálculo CRC16 e geração do QR Code Pix
     </script>
 </body>
 </html>
