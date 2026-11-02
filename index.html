@@ -1,16 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Faturamento | Pix Puro</title>
+    <style>
+        body { background-color: #f8fafc; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+        .container { background-color: #ffffff; padding: 16px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); max-width: 360px; width: 100%; display: flex; flex-direction: column; box-sizing: border-box; }
+        .tarja-seguranca-topo { background-color: #0d47a1; color: #ffffff; font-size: 9px; font-weight: bold; padding: 5px 8px; border-radius: 4px; text-transform: uppercase; margin-bottom: 10px; text-align: center; letter-spacing: 0.5px; }
+        .bloco-texto-topo { text-align: center; margin-bottom: 12px; }
+        .topo-titulo { font-size: 15px; font-weight: 900; color: #cc092f; text-transform: uppercase; margin: 0 0 4px 0; line-height: 1.2; }
+        .sub-titulo { font-size: 10px; font-weight: bold; color: #475569; text-transform: uppercase; margin: 0 0 6px 0; }
+        .referencia-credito { font-size: 9px; color: #64748b; background-color: #f1f5f9; padding: 4px; border-radius: 4px; border-left: 3px solid #0d47a1; margin-top: 2px; }
+        .campo-grupo { width: 100%; margin-bottom: 8px; box-sizing: border-box; }
+        .campo-grupo label { display: block; font-size: 9px; font-weight: bold; color: #475569; margin-bottom: 4px; text-transform: uppercase; }
+        .campo-grupo input, .campo-grupo select { width: 100%; padding: 8px; font-size: 14px; font-weight: bold; border: 2px solid #e2e8f0; border-radius: 6px; box-sizing: border-box; color: #1e293b; }
+        .campo-grupo input:focus, .campo-grupo select:focus { border-color: #cc092f; outline: none; }
+        .grupo-botoes { display: flex; gap: 6px; width: 100%; margin-top: 8px; }
+        .btn { flex: 1; padding: 10px; font-size: 11px; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; transition: background 0.2s; }
+        .btn-gerar { background-color: #cc092f; color: #ffffff; }
+        .btn-limpar { background-color: #e2e8f0; color: #475569; }
+    </style>
+</head>
 <body>
-    <!-- TELA 1: PAINEL DE CONTROLE DE BALCÃO -->
-    <div class="secao-formulario" id="telaForm">
-        <!-- Estrutura do formulário contendo os campos para tipo de chave Pix, chave cadastrada, valor da venda e identificador (TXID), além dos botões de ação -->
-    </div>
+    <div class="container">
+        <div class="tarja-seguranca-topo">🛡️ LIQUIDAÇÃO REAL BCB TIMED</div>
+        <div class="bloco-texto-topo">
+            <div class="topo-titulo">Ferramenta de Pagamento</div>
+            <div class="sub-titulo">Sem taxas e sem juros embutidos</div>
+            <div class="referencia-credito">Destino do Crédito: Mairiporã Agro — José Carlos Suguimoto</div>
+        </div>
 
-    <!-- TELA 2: PÁGINA EXCLUSIVA E ISOLADA DO QR CODE (9x5 CM) -->
-    <div class="secao-qrcode" id="telaQr">
-        <!-- Exibição do QR Code gerado -->
+        <div class="campo-grupo">
+            <label for="tipoChave">Tipo de Chave Pix</label>
+            <select id="tipoChave" onchange="ajustarPlaceholder()">
+                <option value="aleatoria">Chave Aleatória (UUID)</option>
+                <option value="cpf">CPF (apenas números)</option>
+                <option value="cnpj">CNPJ (apenas números)</option>
+                <option value="celular">Celular (Ex: +5511999999999)</option>
+                <option value="email">E-mail</option>
+            </select>
+        </div>
+
+        <div class="campo-grupo">
+            <label for="chavePix">Sua Chave Cadastrada</label>
+            <input type="text" id="chavePix" value="3d4ee862-439d-481d-9f5b-07d69a7182f6">
+        </div>
+
+        <div class="campo-grupo">
+            <label for="valorVenda">Valor do Faturamento (R$)</label>
+            <input type="number" id="valorVenda" step="0.01" placeholder="0,00" min="0.01">
+        </div>
+
+        <div class="campo-grupo">
+            <label for="txid">Identificador da Venda (TXID) - Opcional</label>
+            <input type="text" id="txid" value="***" maxlength="25">
+        </div>
+
+        <div class="grupo-botoes">
+            <button class="btn btn-limpar" onclick="document.getElementById('valorVenda').value=''">Limpar</button>
+            <button class="btn btn-gerar" onclick="avancarParaPix()">Gerar Pix</button>
+        </div>
     </div>
 
     <script>
-        // Funções JavaScript para ajuste de placeholders, cálculo CRC16, limpeza da maquininha e geração dinâmica do QR Code Pix
+        function ajustarPlaceholder() {
+            var t = document.getElementById("tipoChave").value;
+            var c = document.getElementById("chavePix");
+            if(t === "aleatoria") c.value = "3d4ee862-439d-481d-9f5b-07d69a7182f6";
+            if(t === "cpf") c.value = "00000000000";
+            if(t === "cnpj") c.value = "00000000000000";
+            if(t === "celular") c.value = "+5511999999999";
+            if(t === "email") c.value = "mirkoemirko84@gmail.com";
+        }
+
+        function avancarParaPix() {
+            var v = parseFloat(document.getElementById("valorVenda").value);
+            if (isNaN(v) || v <= 0) { alert("Valor inválido."); return; }
+            var vf = v.toFixed(2);
+            var ch = encodeURIComponent(document.getElementById("chavePix").value.trim());
+            var tx = encodeURIComponent(document.getElementById("txid").value.trim() || "***");
+            window.location.href = "pix.html?v=" + vf + "&ch=" + ch + "&tx=" + tx;
+        }
     </script>
 </body>
 </html>
