@@ -20,11 +20,15 @@
         .campo-grupo input, .campo-grupo select { width: 100%; padding: 8px; font-size: 14px; font-weight: bold; border: 2px solid #e2e8f0; border-radius: 6px; box-sizing: border-box; color: #1e293b; }
         .campo-grupo input:focus, .campo-grupo select:focus { border-color: #cc092f; outline: none; }
         #valorVenda { font-size: 18px; text-align: center; color: #cc092f; }
-        .grupo-botoes { display: flex; gap: 6px; width: 100%; margin-top: 8px; margin-bottom: 10px; }
+        .grupo-botoes { display: flex; gap: 6px; width: 100%; margin-top: 8px; margin-bottom: 5px; }
         .btn { flex: 1; padding: 10px; font-size: 11px; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; transition: background 0.2s; }
         .btn-gerar { background-color: #cc092f; color: #ffffff; }
         .btn-limpar { background-color: #e2e8f0; color: #475569; }
-        .area-qrcode { display: none; text-align: center; margin-top: 5px; width: 100%; box-sizing: border-box; }
+        
+        /* ⬇️ TABULADOR MECÂNICO DO SEPARADOR */
+        .indicador-tabular { display: none; text-align: center; font-size: 10px; font-weight: bold; color: #64748b; margin: 8px 0; text-transform: uppercase; border-top: 1px dashed #cbd5e1; padding-top: 8px; }
+        
+        .area-qrcode { display: none; text-align: center; width: 100%; box-sizing: border-box; }
         .bloco-qrcode-real { margin: 5px auto 0 auto; display: flex; justify-content: center; align-items: center; background: #fff; padding: 8px; border: 1px solid #e2e8f0; width: 236px; height: 236px; box-sizing: border-box; }
         .bloco-qrcode-real table { border-collapse: collapse !important; border-spacing: 0 !important; margin: auto; padding: 0 !important; border: none !important; }
         .bloco-qrcode-real td { padding: 0 !important; margin: 0 !important; border: none !important; width: 4px; height: 4px; }
@@ -70,6 +74,9 @@
             <button class="btn btn-gerar" onclick="gerarPix()">Gerar Pix</button>
         </div>
 
+        <!-- ⌨️ LINHA DE CORRIDA DA MÁQUINA (EMPURRA PARA BAIXO) -->
+        <div id="linhaTabular" class="indicador-tabular">Código Gerado Abaixo ⬇️</div>
+
         <div id="blocoQrCode" class="area-qrcode">
             <div id="qrcodeSpace" class="bloco-qrcode-real"></div>
         </div>
@@ -101,6 +108,7 @@
         function limparMaquininha() {
             document.getElementById("valorVenda").value = "";
             document.getElementById("blocoQrCode").style.display = "none";
+            document.getElementById("linhaTabular").style.display = "none";
             document.getElementById("qrcodeSpace").innerHTML = "";
         }
 
@@ -145,6 +153,9 @@
                 tabela.appendChild(htmlLinha);
             }
             qrcodeSpace.appendChild(tabela);
+            
+            /* ⌨️ ATIVA O TABULADOR VISUAL */
+            document.getElementById("linhaTabular").style.display = "block";
             document.getElementById("blocoQrCode").style.display = "block";
         }
     </script>
