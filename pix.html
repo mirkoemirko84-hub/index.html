@@ -54,16 +54,27 @@
             var tx = params.get('tx') || "***";
             if(!vf || !ch) { document.getElementById("qrcodeSpace").innerHTML = "<b style='color:red;'>Erro nos dados.</b>"; return; }
 
-            // Atualiza o valor bonito na tela do balcão
+            // Garante a formatação do valor para duas casas decimais com ponto (Padrão BCB)
+            var valorInalterado = parseFloat(vf).toFixed(2);
+
+            // Atualiza a interface gráfica do balcão para o operador de forma amigável (R$ X,XX)
             document.getElementById("view-valor").innerText = "R$ " + parseFloat(vf).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
 
-            // Montagem das strings oficiais exigidas pelo BCB
-            var cChave = "01" + String(ch.length).padStart(2, '0') + ch;
-            var mAcc = "0014BR.GOV.BCB.PIX" + cChave;
-            var bConta = "26" + String((mAcc + "0214Mairiporã Agro").length).padStart(2, '0') + mAcc + "0214Mairiporã Agro";
-            var bTxid = "62" + String(("05" + String(tx.length).padStart(2, '0') + tx).length).padStart(2, '0') + "05" + String(tx.length).padStart(2, '0') + tx;
+            // 1. Bloco 26: Dados da Conta do Recebedor (Rigorosamente estruturado de acordo com o padrão EMV/BCB)
+            var gui = "0014br.gov.bcb.pix";
+            var key = "01" + String(ch.length).padStart(2, '0') + ch;
+            var subBloco26 = gui + key;
+            var bConta = "26" + String(subBloco26.length).padStart(2, '0') + subBloco26;
             
-            var pLivre = "000201" + bConta + "52040000530398654" + String(vf.length).padStart(2, '0') + vf + "5802BR5921JOSE CARLOS SUGUIMOTO6009MAIRIPORA" + bTxid + "6304";
+            // 2. Bloco 54: Valor da transação com ponto decimal
+            var bValor = "54" + String(valorInalterado.length).padStart(2, '0') + valorInalterado;
+
+            // 3. Bloco 62: Identificador da transação (Obrigatório possuir subcampo 05)
+            var subBloco62 = "05" + String(tx.length).padStart(2, '0') + tx;
+            var bTxid = "62" + String(subBloco62.length).padStart(2, '0') + subBloco62;
+            
+            // 4. Junção de toda a carga de dados (Payload base do Pix)
+            var pLivre = "000201" + bConta + "52040000530398654" + bValor + "5802BR5926JOSE CARLOS SUGUIMOTO      6009MAIRIPORA" + bTxid + "6304";
             var pCompleto = pLivre + calcularCRC16(pLivre);
             
             // Força o motor gráfico a construir a tabela de quadradinhos pretos e brancos
