@@ -63,7 +63,7 @@
         </div>
     </div>
 
-    <script>
+       <script>
         function ajustarPlaceholder() {
             var t = document.getElementById("tipoChave").value;
             var c = document.getElementById("chavePix");
@@ -80,7 +80,12 @@
             var vf = v.toFixed(2);
             var ch = encodeURIComponent(document.getElementById("chavePix").value.trim());
             var tx = encodeURIComponent(document.getElementById("txid").value.trim() || "***");
-            window.location.href = "pix.html?v=" + vf + "&ch=" + ch + "&tx=" + tx;
+            
+            // 🛠️ TRAVA MECÂNICA ANTI-CACHE (Pega a hora, minuto e segundo exato)
+            var cBust = new Date().getTime();
+            
+            // Colocamos o chute inédito na rede com o "&nocache="
+            window.location.href = "pix.html?v=" + vf + "&ch=" + ch + "&tx=" + tx + "&nocache=" + cBust;
         }
     </script>
 </body>
