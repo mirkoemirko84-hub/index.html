@@ -60,22 +60,28 @@
             // Atualiza a interface gráfica do balcão para o operador de forma amigável (R$ X,XX)
             document.getElementById("view-valor").innerText = "R$ " + parseFloat(vf).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
 
-            // 1. Bloco 26: Dados da Conta do Recebedor (Rigorosamente estruturado de acordo com o padrão EMV/BCB)
-            var gui = "0014br.gov.bcb.pix";
-            var key = "01" + String(ch.length).padStart(2, '0') + ch;
-            var subBloco26 = gui + key;
-            var bConta = "26" + String(subBloco26.length).padStart(2, '0') + subBloco26;
-            
-            // 2. Bloco 54: Valor da transação com ponto decimal
-            var bValor = "54" + String(valorInalterado.length).padStart(2, '0') + valorInalterado;
+           // 1. Bloco 26: Chave Pix (36 caracteres da UUID + 14 do domínio)
+var gui = "0014br.gov.bcb.pix";
+var key = "01" + String(ch.length).padStart(2, '0') + ch;
+var subBloco26 = gui + key;
+var bConta = "26" + String(subBloco26.length).padStart(2, '0') + subBloco26;
 
-            // 3. Bloco 62: Identificador da transação (Obrigatório possuir subcampo 05)
-            var subBloco62 = "05" + String(tx.length).padStart(2, '0') + tx;
-            var bTxid = "62" + String(subBloco62.length).padStart(2, '0') + subBloco62;
-            
-            // 4. Junção de toda a carga de dados (Payload base do Pix)
-            var pLivre = "000201" + bConta + "52040000530398654" + bValor + "5802BR5926JOSE CARLOS SUGUIMOTO      6009MAIRIPORA" + bTxid + "6304";
-            var pCompleto = pLivre + calcularCRC16(pLivre);
+// 2. Bloco 54: Valor da transação (Ex: "2.54" -> tamanho 04)
+var valorInalterado = parseFloat(vf).toFixed(2);
+var bValor = "54" + String(valorInalterado.length).padStart(2, '0') + valorInalterado;
+
+// 3. Bloco 62: TXID (Ex: "***" -> subcampo 05 com tamanho 03 -> bloco total tamanho 07)
+var subBloco62 = "05" + String(tx.length).padStart(2, '0') + tx;
+var bTxid = "62" + String(subBloco62.length).padStart(2, '0') + subBloco62;
+
+// 4. Nome e Cidade (Tamanhos e strings exatos sem espaços sobrando)
+var bNome = "5921JOSE CARLOS SUGUIMOTO";
+var bCidade = "6009MAIRIPORA";
+
+// 5. Junção Final Perfeita (Sem nenhuma letra ou número duplicado no meio)
+var pLivre = "000201" + bConta + "520400005303986" + bValor + "5802BR" + bNome + bCidade + bTxid + "6304";
+var pCompleto = pLivre + calcularCRC16(pLivre);
+
             
             // Força o motor gráfico a construir a tabela de quadradinhos pretos e brancos
             var qSpace = document.getElementById("qrcodeSpace");
