@@ -12,8 +12,10 @@
         .bloco-qrcode-real table { border-collapse: collapse !important; border-spacing: 0 !important; margin: auto; padding: 0 !important; border: none !important; }
         .bloco-qrcode-real td { padding: 0 !important; margin: 0 !important; border: none !important; width: 4.5px; height: 4.5px; }
         .txt-valor { font-size: 24px; font-weight: 900; color: #1e293b; margin: 10px 0; }
-        .txt-destino { font-size: 11px; color: #64748b; margin-bottom: 20px; font-weight: 500; }
-        .btn-voltar { margin-top: 20px; padding: 12px 28px; font-size: 11px; font-weight: bold; background-color: #cc092f; color: #ffffff; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; transition: background 0.2s; box-shadow: 0 2px 4px rgb(0 0 0 / 0.1); letter-spacing: 0.5px; width: 100%; }
+        .txt-destino { font-size: 11px; color: #64748b; margin-bottom: 10px; font-weight: 500; }
+        .area-copia-cola { width: 100%; margin-top: 15px; box-sizing: border-box; }
+        .input-pix { width: 100%; padding: 10px; font-size: 11px; font-family: monospace; border: 1px solid #cbd5e1; border-radius: 6px; background-color: #f1f5f9; color: #334155; text-align: center; box-sizing: border-box; }
+        .btn-voltar { margin-top: 15px; padding: 12px 28px; font-size: 11px; font-weight: bold; background-color: #cc092f; color: #ffffff; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; transition: background 0.2s; box-shadow: 0 2px 4px rgb(0 0 0 / 0.1); letter-spacing: 0.5px; width: 100%; }
         .btn-voltar:hover { background-color: #a00724; }
     </style>
 </head>
@@ -28,11 +30,15 @@
             <div id="qrcodeSpace"></div>
         </div>
 
+        <!-- Nova seção para exibir o código em texto para conferência rápida -->
+        <div class="area-copia-cola">
+            <input type="text" id="payloadTexto" class="input-pix" readonly onclick="this.select();" placeholder="Carregando código...">
+        </div>
+
         <button class="btn-voltar" onclick="window.location.href='index.html'">Voltar para Maquininha</button>
     </div>
 
     <script>
-        // 🚀 MOTOR GRÁFICO COMPACTO EMBUTIDO (Desenha o QR Code bloco por bloco)
         var QRCodeMinimal=function(){function f(a,b){this.typeNumber=a;this.errorCorrectionLevel=b;this.modules=null;this.moduleCount=0;this.dataList=[]}f.prototype={addData:function(a){this.dataList.push(new g(a))},make:function(){this.typeNumber=4;this.moduleCount=4*this.typeNumber+17;this.modules=new Array(this.moduleCount);for(var a=0;a<this.moduleCount;a++){this.modules[a]=new Array(this.moduleCount);for(var b=0;b<this.moduleCount;b++)this.modules[a][b]=null}this.p(0,0);this.p(this.moduleCount-7,0);this.p(0,this.moduleCount-7);this.t();var c=h.createData(this.typeNumber,this.errorCorrectionLevel,this.dataList);this.m(c)},p:function(a,b){for(var c=-1;8>=c;c++)if(!(0>a+c||this.moduleCount<=a+c))for(var d=-1;8>=d;d++)0>b+d||this.moduleCount<=b+d||(0<=c&&6>=c&&(0==d||6==d)||0<=d&&6>=d&&(0==c||6==c)||2<=c&&4>=c&&2<=d&&4>=d?this.modules[a+c][b+d]=true:this.modules[a+c][b+d]=false)},t:function(){for(var a=8;a<this.moduleCount-8;a++)null==this.modules[a]&&(this.modules[a]=0==a%2);for(var b=8;b<this.moduleCount-8;b++)null==this.modules[b]&&(this.modules[b]=0==b%2)},m:function(a){for(var b=-1,c=this.modules.length-1,d=7,e=0,g=this.modules.length-1;0<g;g-=2)for(6==g&&g--;;){for(var f=0;2>f;f++)if(null==this.modules[c][g-f]){var h=false;e<a.length&&(h=1==((a[e]>>>d)&1));this.modules[c][g-f]=h;d--;-1==d&&(e++,d=7)}c+=b;if(0>c||this.modules.length<=c){c-=b;b=-b;break}}}};var h={createData:function(a,b,c){for(var d=new e,f=0;f<c.length;f++){var g=c[f];d.put(4,4);d.put(g.getLength(),8);g.write(d)}for(;d.numBits<224;)d.put(0,8);var h=d.buffer;return h}};function g(a){this.data=a}g.prototype={getLength:function(){return this.data.length},write:function(a){for(var b=0;b<this.data.length;b++)a.put(this.data.charCodeAt(b),8)}};function e(){this.buffer=[];this.numBits=0}e.prototype={put:function(a,b){for(var c=0;c<b;c++)this.putBit(1==((a>>>(b-c-1))&1))},putBit:function(a){var b=Math.floor(this.numBits/8);this.buffer.length<=b&&this.buffer.push(0);a&&(this.buffer[b]|=128>>this.numBits%8);this.numBits++}};return f}();
 
         function calcularCRC16(str) {
@@ -54,36 +60,37 @@
             var tx = params.get('tx') || "***";
             if(!vf || !ch) { document.getElementById("qrcodeSpace").innerHTML = "<b style='color:red;'>Erro nos dados.</b>"; return; }
 
-            // Garante a formatação do valor para duas casas decimais com ponto (Padrão BCB)
-            var valorInalterado = parseFloat(vf).toFixed(2);
+            // ⚠️ Correção técnica: Chaves aleatórias Pix obrigatoriamente devem ser minúsculas no padrão BCB
+            var chaveLimpa = ch.trim().toLowerCase();
 
-            // Atualiza a interface gráfica do balcão para o operador de forma amigável (R$ X,XX)
+            var valorInalterado = parseFloat(vf).toFixed(2);
             document.getElementById("view-valor").innerText = "R$ " + parseFloat(vf).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
 
-           // 1. Bloco 26: Chave Pix (36 caracteres da UUID + 14 do domínio)
-var gui = "0014br.gov.bcb.pix";
-var key = "01" + String(ch.length).padStart(2, '0') + ch;
-var subBloco26 = gui + key;
-var bConta = "26" + String(subBloco26.length).padStart(2, '0') + subBloco26;
+            // 1. Bloco 26: Configuração exata do arranjo Pix
+            var gui = "0014br.gov.bcb.pix";
+            var key = "01" + String(chaveLimpa.length).padStart(2, '0') + chaveLimpa;
+            var subBloco26 = gui + key;
+            var bConta = "26" + String(subBloco26.length).padStart(2, '0') + subBloco26;
 
-// 2. Bloco 54: Valor da transação (Ex: "2.54" -> tamanho 04)
-var valorInalterado = parseFloat(vf).toFixed(2);
-var bValor = "54" + String(valorInalterado.length).padStart(2, '0') + valorInalterado;
+            // 2. Bloco 54: Valor estruturado
+            var bValor = "54" + String(valorInalterado.length).padStart(2, '0') + valorInalterado;
 
-// 3. Bloco 62: TXID (Ex: "***" -> subcampo 05 com tamanho 03 -> bloco total tamanho 07)
-var subBloco62 = "05" + String(tx.length).padStart(2, '0') + tx;
-var bTxid = "62" + String(subBloco62.length).padStart(2, '0') + subBloco62;
+            // 3. Bloco 62: Identificador complementar (TXID)
+            var subBloco62 = "05" + String(tx.length).padStart(2, '0') + tx;
+            var bTxid = "62" + String(subBloco62.length).padStart(2, '0') + subBloco62;
 
-// 4. Nome e Cidade (Tamanhos e strings exatos sem espaços sobrando)
-var bNome = "5921JOSE CARLOS SUGUIMOTO";
-var bCidade = "6009MAIRIPORA";
+            // 4. Strings de identificação comercial
+            var bNome = "5921JOSE CARLOS SUGUIMOTO";
+            var bCidade = "6009MAIRIPORA";
 
-// 5. Junção Final Perfeita (Sem nenhuma letra ou número duplicado no meio)
-var pLivre = "000201" + bConta + "520400005303986" + bValor + "5802BR" + bNome + bCidade + bTxid + "6304";
-var pCompleto = pLivre + calcularCRC16(pLivre);
-
+            // 5. Consolidação e assinatura eletrônica CRC16
+            var pLivre = "000201" + bConta + "520400005303986" + bValor + "5802BR" + bNome + bCidade + bTxid + "6304";
+            var pCompleto = pLivre + calcularCRC16(pLivre);
             
-            // Força o motor gráfico a construir a tabela de quadradinhos pretos e brancos
+            // Alimenta a caixa de texto para cópia direta na tela do celular
+            document.getElementById("payloadTexto").value = pCompleto;
+
+            // Motor de renderização visual
             var qSpace = document.getElementById("qrcodeSpace");
             var qr = new QRCodeMinimal(4, 'M');
             qr.addData(pCompleto);
