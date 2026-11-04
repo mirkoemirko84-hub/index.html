@@ -4,13 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Código de Pagamento Oficial BCB</title>
-    <style>
+        <style>
         body { margin: 0; padding: 30px 20px; background-color: #f8fafc; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; box-sizing: border-box; }
-        .container-pix { background-color: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); max-width: 360px; width: 100%; text-align: center; box-sizing: border-box; }
+        .container-pix { background-color: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); max-width: 380px; width: 100%; text-align: center; box-sizing: border-box; }
         .indicador-tabular { font-size: 14px; font-weight: bold; color: #0d47a1; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .bloco-qrcode-real { display: flex; justify-content: center; align-items: center; background: #ffffff; padding: 16px; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); width: 260px; height: 260px; margin: 15px auto; box-sizing: border-box; }
+        
+        /* 🔍 EXPANSÃO DO BLOCO: Aumentado para 300px para dar conforto à câmera */
+        .bloco-qrcode-real { display: flex; justify-content: center; align-items: center; background: #ffffff; padding: 16px; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); width: 300px; height: 300px; margin: 15px auto; box-sizing: border-box; }
         .bloco-qrcode-real table { border-collapse: collapse !important; border-spacing: 0 !important; margin: auto; padding: 0 !important; border: none !important; }
-        .bloco-qrcode-real td { padding: 0 !important; margin: 0 !important; border: none !important; width: 4.5px; height: 4.5px; }
+        
+        /* 🚀 CALIBRAGEM VISUAL: Aumentado de 4.5px para 6px para o sensor do banco ler na hora */
+        .bloco-qrcode-real td { padding: 0 !important; margin: 0 !important; border: none !important; width: 6px; height: 6px; }
+        
         .txt-valor { font-size: 24px; font-weight: 900; color: #1e293b; margin: 10px 0; }
         .txt-destino { font-size: 11px; color: #64748b; margin-bottom: 10px; font-weight: 500; }
         .area-copia-cola { width: 100%; margin-top: 15px; box-sizing: border-box; }
@@ -18,6 +23,7 @@
         .btn-voltar { margin-top: 15px; padding: 12px 28px; font-size: 11px; font-weight: bold; background-color: #cc092f; color: #ffffff; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; transition: background 0.2s; box-shadow: 0 2px 4px rgb(0 0 0 / 0.1); letter-spacing: 0.5px; width: 100%; }
         .btn-voltar:hover { background-color: #a00724; }
     </style>
+
 </head>
 <body>
 
