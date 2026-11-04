@@ -69,6 +69,42 @@
             var key = "01" + String(chaveLimpa.length).padStart(2, '0') + chaveLimpa;
             var subBloco26 = gui + key;
             var bConta = "26" + String(subBloco26.length).padStart(2, '0') + subBloco26;
+            var bValor = "54" + String(valorInalter0.length).padStart(2, '0') + valorInalterado;
+            var subBloco62 = "05" + String(tx.length).padStart(2, '0') + tx;
+            var bTxid = "62" + String(subBloco62.length).padStart(2, '0') + subBloco62;
+            var bNome = "5921JOSE CARLOS SUGUIMOTO";
+            var bCidade = "6009MAIRIPORA";
+
+            var pLivre = "000201" + bConta + "520400005303986" + bValor + "5802BR" + bNome + bCidade + bTxid + "6304";
+            var pCompleto = pLivre + calcularCRC16(pLivre);
+            
+            // Alimenta o campo de texto de segurança
+            document.getElementById("payloadTexto").value = pCompleto;
+
+            // 🚀 CORREÇÃO DEFINITIVA: URL oficial do gerador de imagem limpa do Google Charts
+            var qrUrl = "https://googleapis.com" + encodeURIComponent(pCompleto);
+            
+            // Injeta a tag da imagem direto na tela
+            document.getElementById("qrcodeSpace").innerHTML = '<img src="' + qrUrl + '" alt="QR Code Pix">';
+        };
+    </script>
+
+        window.onload = function() {
+            var params = new URLSearchParams(window.location.search);
+            var vf = params.get('v');
+            var ch = params.get('ch');
+            var tx = params.get('tx') || "***";
+            if(!vf || !ch) { document.getElementById("qrcodeSpace").innerHTML = "<b style='color:red;'>Erro nos dados.</b>"; return; }
+
+            var chaveLimpa = ch.trim().toLowerCase();
+            var valorInalterado = parseFloat(vf).toFixed(2);
+            document.getElementById("view-valor").innerText = "R$ " + parseFloat(vf).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+
+            // Montagem matemática do Payload Pix Puro
+            var gui = "0014br.gov.bcb.pix";
+            var key = "01" + String(chaveLimpa.length).padStart(2, '0') + chaveLimpa;
+            var subBloco26 = gui + key;
+            var bConta = "26" + String(subBloco26.length).padStart(2, '0') + subBloco26;
             var bValor = "54" + String(valorInalterado.length).padStart(2, '0') + valorInalterado;
             var subBloco62 = "05" + String(tx.length).padStart(2, '0') + tx;
             var bTxid = "62" + String(subBloco62.length).padStart(2, '0') + subBloco62;
