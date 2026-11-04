@@ -8,11 +8,8 @@
         body { margin: 0; padding: 30px 20px; background-color: #f8fafc; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; box-sizing: border-box; }
         .container-pix { background-color: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); max-width: 360px; width: 100%; text-align: center; box-sizing: border-box; }
         .indicador-tabular { font-size: 14px; font-weight: bold; color: #0d47a1; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
-        
-        /* Bloco do QR Code calibrado para receber a imagem perfeita */
         .bloco-qrcode-real { display: flex; justify-content: center; align-items: center; background: #ffffff; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); width: 280px; height: 280px; margin: 15px auto; box-sizing: border-box; }
         .bloco-qrcode-real img { width: 100%; height: 100%; object-fit: contain; }
-        
         .txt-valor { font-size: 24px; font-weight: 900; color: #1e293b; margin: 10px 0; }
         .txt-destino { font-size: 11px; color: #64748b; margin-bottom: 10px; font-weight: 500; }
         .area-copia-cola { width: 100%; margin-top: 15px; box-sizing: border-box; }
@@ -29,7 +26,6 @@
         <div class="txt-destino">Destino: Mairiporã Agro</div>
         
         <div class="bloco-qrcode-real">
-            <!-- Espaço limpo focado em renderizar a imagem sem falhas de script -->
             <div id="qrcodeSpace">Carregando imagem...</div>
         </div>
 
@@ -64,43 +60,6 @@
             var valorInalterado = parseFloat(vf).toFixed(2);
             document.getElementById("view-valor").innerText = "R$ " + parseFloat(vf).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
 
-            // Montagem matemática do Payload Pix Puro
-            var gui = "0014br.gov.bcb.pix";
-            var key = "01" + String(chaveLimpa.length).padStart(2, '0') + chaveLimpa;
-            var subBloco26 = gui + key;
-            var bConta = "26" + String(subBloco26.length).padStart(2, '0') + subBloco26;
-            var bValor = "54" + String(valorInalter0.length).padStart(2, '0') + valorInalterado;
-            var subBloco62 = "05" + String(tx.length).padStart(2, '0') + tx;
-            var bTxid = "62" + String(subBloco62.length).padStart(2, '0') + subBloco62;
-            var bNome = "5921JOSE CARLOS SUGUIMOTO";
-            var bCidade = "6009MAIRIPORA";
-
-            var pLivre = "000201" + bConta + "520400005303986" + bValor + "5802BR" + bNome + bCidade + bTxid + "6304";
-            var pCompleto = pLivre + calcularCRC16(pLivre);
-            
-            // Alimenta o campo de texto de segurança
-            document.getElementById("payloadTexto").value = pCompleto;
-
-            // 🚀 CORREÇÃO DEFINITIVA: URL oficial do gerador de imagem limpa do Google Charts
-            var qrUrl = "https://googleapis.com" + encodeURIComponent(pCompleto);
-            
-            // Injeta a tag da imagem direto na tela
-            document.getElementById("qrcodeSpace").innerHTML = '<img src="' + qrUrl + '" alt="QR Code Pix">';
-        };
-    </script>
-
-        window.onload = function() {
-            var params = new URLSearchParams(window.location.search);
-            var vf = params.get('v');
-            var ch = params.get('ch');
-            var tx = params.get('tx') || "***";
-            if(!vf || !ch) { document.getElementById("qrcodeSpace").innerHTML = "<b style='color:red;'>Erro nos dados.</b>"; return; }
-
-            var chaveLimpa = ch.trim().toLowerCase();
-            var valorInalterado = parseFloat(vf).toFixed(2);
-            document.getElementById("view-valor").innerText = "R$ " + parseFloat(vf).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-
-            // Montagem matemática do Payload Pix Puro
             var gui = "0014br.gov.bcb.pix";
             var key = "01" + String(chaveLimpa.length).padStart(2, '0') + chaveLimpa;
             var subBloco26 = gui + key;
@@ -114,13 +73,12 @@
             var pLivre = "000201" + bConta + "520400005303986" + bValor + "5802BR" + bNome + bCidade + bTxid + "6304";
             var pCompleto = pLivre + calcularCRC16(pLivre);
             
-            // Alimenta o campo de texto de segurança
             document.getElementById("payloadTexto").value = pCompleto;
 
-            // 🚀 ALTERAÇÃO CHAVE: Gera o QR Code por imagem limpa de alta resolução via API do Google Charts
-            var qrUrl = "https://googleapis.com|1&chl=" + encodeURIComponent(pCompleto);
+            // 🚀 URL Oficial Corrigida do Google Charts para gerar a imagem nativa
+            var qrUrl = "https://googleapis.com" + encodeURIComponent(pCompleto);
             
-            // Injeta a tag da imagem direto na tela
+            // Injeta a tag da imagem corretamente na tela
             document.getElementById("qrcodeSpace").innerHTML = '<img src="' + qrUrl + '" alt="QR Code Pix">';
         };
     </script>
