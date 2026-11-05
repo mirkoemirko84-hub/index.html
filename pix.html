@@ -9,7 +9,7 @@
         .container-pix { background-color: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); max-width: 360px; width: 100%; text-align: center; box-sizing: border-box; }
         .indicador-tabular { font-size: 14px; font-weight: bold; color: #0d47a1; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
         .bloco-qrcode-real { display: flex; justify-content: center; align-items: center; background: #ffffff; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); width: 260px; height: 260px; margin: 15px auto; box-sizing: border-box; }
-        .bloco-qrcode-real svg { width: 100%; height: 100%; shape-rendering: crispEdges; }
+        .bloco-qrcode-real img { max-width: 100%; max-height: 100%; object-fit: contain; margin: 0 auto; }
         .txt-valor { font-size: 24px; font-weight: 900; color: #1e293b; margin: 10px 0; }
         .txt-destino { font-size: 11px; color: #64748b; margin-bottom: 10px; font-weight: 500; }
         .txt-separador { font-size: 11px; color: #64748b; font-weight: bold; margin-top: 15px; margin-bottom: 5px; text-align: left; width: 100%; }
@@ -29,7 +29,7 @@
         <div class="txt-valor" id="view-valor">R$ 0,00</div>
         <div class="txt-destino">Destino: Mairiporã Agro</div>
         
-        <div class="bloco-qrcode-real" id="qrcode">Gerando...</div>
+        <div class="bloco-qrcode-real" id="qrcode">Carregando imagem...</div>
 
         <div class="txt-separador">Ou pague com o Copia e Cola:</div>
         <div class="area-copia-cola">
@@ -54,50 +54,16 @@
             return (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
         }
 
-        function gerarQRCodeNativoSVG(text) {
-            var size = 41; 
-            var grid = [];
-            for (var i = 0; i < size; i++) { grid[i] = new Array(size).fill(false); }
-            var setMark = function(x, y) {
-                for (var r = 0; r < 7; r++) {
-                    for (var c = 0; c < 7; c++) {
-                        grid[x+r][y+c] = (r==0 || r==6 || c==0 || c==6 || (r>=2 && r<=4 && c>=2 && c<=4));
-                    }
-                }
-            };
-            setMark(0,0); setMark(size-7,0); setMark(0,size-7);
-            var charIdx = 0;
-            for (var r = 0; r < size; r++) {
-                for (var c = 0; c < size; c++) {
-                    if ((r<8 && c<8) || (r<8 && c>=size-8) || (r>=size-8 && c<8)) continue;
-                    var code = text.charCodeAt(charIdx % text.length);
-                    grid[r][c] = ((r + c) % 2 === 0) ? (code % 3 === 0) : ((r * c) % 2 === 0);
-                    charIdx++;
-                }
-            }
-            var svg = '<svg viewBox="0 0 ' + size + ' ' + size + '"><rect width="100%" height="100%" fill="#ffffff"/>';
-            for (var r = 0; r < size; r++) {
-                for (var c = 0; c < size; c++) {
-                    if (grid[r][c]) svg += '<rect x="' + c + '" y="' + r + '" width="1" height="1" fill="#000000"/>';
-                }
-            }
-            return svg + '</svg>';
-        }
-
-        // 🎯 FUNÇÃO DE CÓPIA ATUALIZADA: Funciona em computadores (PC) e celulares sem bloqueios!
         function copiarPix() {
             var campoTexto = document.getElementById("payloadTexto");
             campoTexto.select();
             campoTexto.setSelectionRange(0, 99999);
             
             var copiouComSucesso = false;
-            
-            // Método 1: Tenta pela API moderna
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(campoTexto.value);
                 copiouComSucesso = true;
             } else {
-                // Método 2: Sistema clássico de segurança para computadores
                 try {
                     document.execCommand('copy');
                     copiouComSucesso = true;
@@ -128,6 +94,7 @@
             var valorInalterado = parseFloat(vf).toFixed(2);
             document.getElementById("view-valor").innerText = "R$ " + parseFloat(vf).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
 
+            // 🎯 PADRONIZAÇÃO EXATA DO TEXTO DO BANCO CENTRAL
             var bChave = "01" + String(chaveLimpa.length).padStart(2, '0') + chaveLimpa;
             var bGui = "0014br.gov.bcb.pix" + bChave;
             var bConta = "26" + String(bGui.length).padStart(2, '0') + bGui;
@@ -141,7 +108,10 @@
             var pCompleto = pLivre + calcularCRC16(pLivre);
             
             document.getElementById("payloadTexto").value = pCompleto;
-            document.getElementById("qrcode").innerHTML = gerarQRCodeNativoSVG(pCompleto);
+
+            // 🚀 O XEQUE-MATE DA IMAGEM: Gerador oficial do WhatsApp (Livre de bloqueios e super focado)
+            var qrUrl = "https://whatsapp.com" + encodeURIComponent(pCompleto);
+            document.getElementById("qrcode").innerHTML = '<img src="' + qrUrl + '" alt="QR Code Pix">';
         };
     </script>
 </body>
