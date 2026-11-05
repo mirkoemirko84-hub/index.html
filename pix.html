@@ -75,8 +75,8 @@
             
             document.getElementById("payloadTexto").value = pCompleto;
 
-            // 🚀 URL Oficial Corrigida do Google Charts para gerar a imagem nativa
-            var qrUrl = "https://googleapis.com" + encodeURIComponent(pCompleto);
+            // 🚀 URL Corrigida e funcional para gerar o QR Code perfeitamente
+            var qrUrl = "https://qrserver.com" + encodeURIComponent(pCompleto);
             
             // Injeta a tag da imagem corretamente na tela
             document.getElementById("qrcodeSpace").innerHTML = '<img src="' + qrUrl + '" alt="QR Code Pix">';
