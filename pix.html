@@ -9,14 +9,18 @@
         .container-pix { background-color: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); max-width: 360px; width: 100%; text-align: center; box-sizing: border-box; }
         .indicador-tabular { font-size: 14px; font-weight: bold; color: #0d47a1; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
         .bloco-qrcode-real { display: flex; justify-content: center; align-items: center; background: #ffffff; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); width: 280px; height: 280px; margin: 15px auto; box-sizing: border-box; }
-        .bloco-qrcode-real svg { width: 100%; height: 100%; }
+        .bloco-qrcode-real canvas, .bloco-qrcode-real img { max-width: 100%; max-height: 100%; object-fit: contain; margin: 0 auto; }
         .txt-valor { font-size: 24px; font-weight: 900; color: #1e293b; margin: 10px 0; }
         .txt-destino { font-size: 11px; color: #64748b; margin-bottom: 10px; font-weight: 500; }
         .area-copia-cola { width: 100%; margin-top: 15px; box-sizing: border-box; }
         .input-pix { width: 100%; padding: 10px; font-size: 11px; font-family: monospace; border: 1px solid #cbd5e1; border-radius: 6px; background-color: #f1f5f9; color: #334155; text-align: center; box-sizing: border-box; }
         .btn-voltar { margin-top: 15px; padding: 12px 28px; font-size: 11px; font-weight: bold; background-color: #cc092f; color: #ffffff; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; transition: background 0.2s; box-shadow: 0 2px 4px rgb(0 0 0 / 0.1); letter-spacing: 0.5px; width: 100%; }
         .btn-voltar:hover { background-color: #a00724; }
+        /* Estilo elegante para o seu rodapé de desenvolvimento */
+        .rodape-software { margin-top: 20px; font-size: 10px; color: #94a3b8; font-family: monospace; letter-spacing: 0.5px; text-align: center; }
     </style>
+    <!-- Gerador profissional de matriz de alta precisão (Leitura imediata de balcão) -->
+    <script src="https://jsdelivr.net"></script>
 </head>
 <body>
 
@@ -25,13 +29,16 @@
         <div class="txt-valor" id="view-valor">R$ 0,00</div>
         <div class="txt-destino">Destino: Mairiporã Agro</div>
         
-        <div class="bloco-qrcode-real" id="qrcode">Gerando...</div>
+        <div class="bloco-qrcode-real" id="qrcode"></div>
 
         <div class="area-copia-cola">
             <input type="text" id="payloadTexto" class="input-pix" readonly onclick="this.select();" placeholder="Carregando código...">
         </div>
 
         <button class="btn-voltar" onclick="window.location.href='index.html'">Voltar para Maquininha</button>
+        
+        <!-- 🚀 Seu carimbo oficial de versão inserido com sucesso -->
+        <div class="rodape-software">JCS_software . versao 31.10.26.05</div>
     </div>
 
     <script>
@@ -45,57 +52,6 @@
                 }
             }
             return (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
-        }
-
-        // Mini gerador de QR Code embutido via elemento SVG nativo
-        function gerarQRCodeSVG(texto) {
-            var qr = miniQR(texto);
-            var matriz = qr.modules;
-            var tamanho = matriz.length;
-            var svg = '<svg viewBox="0 0 ' + tamanho + ' ' + tamanho + '" shape-rendering="crispEdges">';
-            svg += '<rect width="100%" height="100%" fill="#ffffff"/>';
-            for (var r = 0; r < tamanho; r++) {
-                for (var c = 0; c < tamanho; c++) {
-                    if (matriz[r][c]) {
-                        svg += '<rect x="' + c + '" y="' + r + '" width="1" height="1" fill="#000000"/>';
-                    }
-                }
-            }
-            svg += '</svg>';
-            return svg;
-        }
-
-        // Lógica simplificada de codificação QR para garantir independência total
-        function miniQR(texto) {
-            var m = [];
-            var tam = 41; // Versão 6 ideal para o tamanho do texto Pix
-            for (var i = 0; i < tam; i++) { m[i] = new Array(tam).fill(false); }
-            
-            // Desenha os marcadores de posição (quadrados dos cantos)
-            var desenharMarcador = function(x, y) {
-                for (var r = -1; r <= 7; r++) {
-                    for (var c = -1; c <= 7; c++) {
-                        if (x+r >= 0 && x+r < tam && y+c >= 0 && y+c < tam) {
-                            var b = (r >= 0 && r <= 6 && (c == 0 || c == 6)) || (c >= 0 && c <= 6 && (r == 0 || r == 6)) || (r >= 2 && r <= 4 && c >= 2 && c <= 4);
-                            m[x+r][y+c] = b;
-                        }
-                    }
-                }
-            };
-            desenharMarcador(0, 0); desenharMarcador(tam - 7, 0); desenharMarcador(0, tam - 7);
-            
-            // Preenche o restante do corpo com um padrão visual estável para leitura do payload
-            var idx = 0;
-            for (var r = 0; r < tam; r++) {
-                for (var c = 0; c < tam; c++) {
-                    if ((r < 8 && c < 8) || (r < 8 && c >= tam - 8) || (r >= tam - 8 && c < 8)) continue;
-                    if (r == 6 || c == 6) { m[r][c] = (r % 2 == 0 == (c % 2 == 0)); continue; }
-                    var charCode = texto.charCodeAt(idx % texto.length);
-                    m[r][c] = ((r + c) % 2 === 0) ? (charCode % 2 === 0) : ((r * c) % 3 === 0);
-                    idx++;
-                }
-            }
-            return { modules: m };
         }
 
         window.onload = function() {
@@ -129,8 +85,17 @@
             
             document.getElementById("payloadTexto").value = pCompleto;
 
-            // 🎯 DESENHO DIRETO EM SVG NATIVO: Sem chamadas externas, impossível de bloquear
-            document.getElementById("qrcode").innerHTML = gerarQRCodeSVG(pCompleto);
+            // 🎯 CALIBRAÇÃO DE PRECISÃO AUTOMÁTICA
+            try {
+                // Auto-seleção de tamanho ideal (0) com tolerância M de leitura para focar rápido na câmera
+                var qr = qrcode(0, 'M');
+                qr.addData(pCompleto);
+                qr.make();
+                // Gera a tag de imagem calibrada com tamanho perfeito para o visor
+                document.getElementById("qrcode").innerHTML = qr.createImgTag(6, 12);
+            } catch (err) {
+                document.getElementById("qrcode").innerHTML = "<b style='color:red;'>Erro ao calibrar imagem.</b>";
+            }
         };
     </script>
 </body>
