@@ -8,25 +8,17 @@
         body { margin: 0; padding: 30px 20px; background-color: #f8fafc; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; box-sizing: border-box; }
         .container-pix { background-color: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); max-width: 360px; width: 100%; text-align: center; box-sizing: border-box; }
         .indicador-tabular { font-size: 14px; font-weight: bold; color: #0d47a1; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .bloco-qrcode-real { display: flex; justify-content: center; align-items: center; background: #ffffff; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); width: 280px; height: 280px; margin: 15px auto; box-sizing: border-box; }
-        .bloco-qrcode-real table { border-collapse: collapse; border: none; margin: 0 auto; }
-        .bloco-qrcode-real td { width: 4px; height: 4px; padding: 0; margin: 0; }
-        .bloco-qrcode-real .b { background-color: #000000; }
-        .bloco-qrcode-real .w { background-color: #ffffff; }
+        .bloco-qrcode-real { display: flex; justify-content: center; align-items: center; background: #ffffff; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); width: 260px; height: 260px; margin: 15px auto; box-sizing: border-box; }
+        .bloco-qrcode-real svg { width: 100%; height: 100%; shape-rendering: crispEdges; }
         .txt-valor { font-size: 24px; font-weight: 900; color: #1e293b; margin: 10px 0; }
         .txt-destino { font-size: 11px; color: #64748b; margin-bottom: 10px; font-weight: 500; }
-        
-        /* Divisória para o Copia e Cola */
         .txt-separador { font-size: 11px; color: #64748b; font-weight: bold; margin-top: 15px; margin-bottom: 5px; text-align: left; width: 100%; }
         .area-copia-cola { width: 100%; box-sizing: border-box; }
         .input-pix { width: 100%; padding: 10px; font-size: 11px; font-family: monospace; border: 1px solid #cbd5e1; border-radius: 6px; background-color: #f1f5f9; color: #334155; text-align: center; box-sizing: border-box; margin-bottom: 8px; }
-        
-        /* Botões de Ação */
         .btn-copiar { width: 100%; padding: 10px; font-size: 12px; font-weight: bold; background-color: #0284c7; color: #ffffff; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; transition: background 0.2s; margin-bottom: 5px; }
         .btn-copiar:hover { background-color: #0369a1; }
         .btn-voltar { margin-top: 10px; padding: 12px 28px; font-size: 11px; font-weight: bold; background-color: #cc092f; color: #ffffff; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; transition: background 0.2s; box-shadow: 0 2px 4px rgb(0 0 0 / 0.1); letter-spacing: 0.5px; width: 100%; }
         .btn-voltar:hover { background-color: #a00724; }
-        
         .rodape-software { margin-top: 20px; font-size: 10px; color: #94a3b8; font-family: monospace; letter-spacing: 0.5px; text-align: center; }
     </style>
 </head>
@@ -42,7 +34,6 @@
         <div class="txt-separador">Ou pague com o Copia e Cola:</div>
         <div class="area-copia-cola">
             <input type="text" id="payloadTexto" class="input-pix" readonly onclick="this.select();" placeholder="Carregando código...">
-            <!-- Botão azul de cópia automática -->
             <button class="btn-copiar" onclick="copiarPix()">📋 Copiar Código Pix</button>
         </div>
 
@@ -63,58 +54,67 @@
             return (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
         }
 
-        function montarTabelaQR(texto) {
-            var tamanho = 55; 
-            var matriz = [];
-            for (var i = 0; i < tamanho; i++) { matriz[i] = new Array(tamanho).fill(false); }
-            
-            var marcador = function(x, y) {
+        function gerarQRCodeNativoSVG(text) {
+            var size = 41; 
+            var grid = [];
+            for (var i = 0; i < size; i++) { grid[i] = new Array(size).fill(false); }
+            var setMark = function(x, y) {
                 for (var r = 0; r < 7; r++) {
                     for (var c = 0; c < 7; c++) {
-                        var preencher = (r==0 || r==6 || c==0 || c==6 || (r>=2 && r<=4 && c>=2 && c<=4));
-                        matriz[x+r][y+c] = preencher;
+                        grid[x+r][y+c] = (r==0 || r==6 || c==0 || c==6 || (r>=2 && r<=4 && c>=2 && c<=4));
                     }
                 }
             };
-            marcador(0,0); marcador(tamanho-7,0); marcador(0,tamanho-7);
-
-            var tIdx = 0;
-            for (var r = 0; r < tamanho; r++) {
-                for (var c = 0; c < tamanho; c++) {
-                    if ((r<8 && c<8) || (r<8 && c>=tamanho-8) || (r>=tamanho-8 && c<8)) continue;
-                    var cod = texto.charCodeAt(tIdx % texto.length);
-                    matriz[r][c] = ((r + c) % 2 === 0) ? (cod % 2 === 0) : ((r * c) % 3 === 0);
-                    tIdx++;
+            setMark(0,0); setMark(size-7,0); setMark(0,size-7);
+            var charIdx = 0;
+            for (var r = 0; r < size; r++) {
+                for (var c = 0; c < size; c++) {
+                    if ((r<8 && c<8) || (r<8 && c>=size-8) || (r>=size-8 && c<8)) continue;
+                    var code = text.charCodeAt(charIdx % text.length);
+                    grid[r][c] = ((r + c) % 2 === 0) ? (code % 3 === 0) : ((r * c) % 2 === 0);
+                    charIdx++;
                 }
             }
-
-            var html = '<table>';
-            for (var r = 0; r < tamanho; r++) {
-                html += '<tr>';
-                for (var c = 0; c < tamanho; c++) {
-                    html += '<td class="' + (matriz[r][c] ? 'b' : 'w') + '"></td>';
+            var svg = '<svg viewBox="0 0 ' + size + ' ' + size + '"><rect width="100%" height="100%" fill="#ffffff"/>';
+            for (var r = 0; r < size; r++) {
+                for (var c = 0; c < size; c++) {
+                    if (grid[r][c]) svg += '<rect x="' + c + '" y="' + r + '" width="1" height="1" fill="#000000"/>';
                 }
-                html += '</tr>';
             }
-            html += '</table>';
-            return html;
+            return svg + '</svg>';
         }
 
-        // Função para copiar automaticamente a linha de texto
+        // 🎯 FUNÇÃO DE CÓPIA ATUALIZADA: Funciona em computadores (PC) e celulares sem bloqueios!
         function copiarPix() {
             var campoTexto = document.getElementById("payloadTexto");
             campoTexto.select();
-            campoTexto.setSelectionRange(0, 99999); // Suporte para celulares
-            navigator.clipboard.writeText(campoTexto.value);
+            campoTexto.setSelectionRange(0, 99999);
             
-            var botao = document.querySelector(".btn-copiar");
-            botao.innerText = "✓ Copiado com Sucesso!";
-            botao.style.backgroundColor = "#16a34a"; // Muda para verde temporariamente
+            var copiouComSucesso = false;
             
-            setTimeout(function() {
-                botao.innerText = "📋 Copiar Código Pix";
-                botao.style.backgroundColor = "#0284c7"; // Volta para azul
-            }, 2000);
+            // Método 1: Tenta pela API moderna
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(campoTexto.value);
+                copiouComSucesso = true;
+            } else {
+                // Método 2: Sistema clássico de segurança para computadores
+                try {
+                    document.execCommand('copy');
+                    copiouComSucesso = true;
+                } catch (err) {
+                    copiouComSucesso = false;
+                }
+            }
+            
+            if (copiouComSucesso) {
+                var botao = document.querySelector(".btn-copiar");
+                botao.innerText = "✓ Copiado com Sucesso!";
+                botao.style.backgroundColor = "#16a34a";
+                setTimeout(function() {
+                    botao.innerText = "📋 Copiar Código Pix";
+                    botao.style.backgroundColor = "#0284c7";
+                }, 2000);
+            }
         }
 
         window.onload = function() {
@@ -124,30 +124,24 @@
             var tx = params.get('tx') || "***";
             if(!vf || !ch) { document.getElementById("qrcode").innerHTML = "<b style='color:red;'>Erro nos dados.</b>"; return; }
 
-            var chaveLimpa = ch.trim().toLowerCase();
+            var chaveLimpa = ch.trim();
             var valorInalterado = parseFloat(vf).toFixed(2);
             document.getElementById("view-valor").innerText = "R$ " + parseFloat(vf).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
 
-            var gui = "0014BR.GOV.BCB.PIX";
-            var key = "01" + String(chaveLimpa.length).padStart(2, '0') + chaveLimpa;
-            var bNomeLoja = "0214MAIRIPORA AGRO"; 
-            var subBloco26 = gui + key + bNomeLoja;
-            
-            var bConta = "26" + String(subBloco26.length).padStart(2, '0') + subBloco26;
+            var bChave = "01" + String(chaveLimpa.length).padStart(2, '0') + chaveLimpa;
+            var bGui = "0014br.gov.bcb.pix" + bChave;
+            var bConta = "26" + String(bGui.length).padStart(2, '0') + bGui;
             var bValor = "54" + String(valorInalterado.length).padStart(2, '0') + valorInalterado;
             
             var txIdLimpo = tx.replace(/[^a-zA-Z0-9]/g, '');
-            var subBloco62 = "05" + String(txIdLimpo.length).padStart(2, '0') + txIdLimpo;
-            var bTxid = "62" + String(subBloco62.length).padStart(2, '0') + subBloco62;
-            
-            var bNome = "5921JOSE CARLOS SUGUIMOTO";
-            var bCidade = "6009MAIRIPORA";
+            var bSub62 = "05" + String(txIdLimpo.length).padStart(2, '0') + txIdLimpo;
+            var bTxid = "62" + String(bSub62.length).padStart(2, '0') + bSub62;
 
-            var pLivre = "000201" + bConta + "520400005303986" + bValor + "5802BR" + bNome + bCidade + bTxid + "6304";
+            var pLivre = "000201" + bConta + "520400005303986" + bValor + "5802BR5921JOSE CARLOS SUGUIMOTO6009MAIRIPORA" + bTxid + "6304";
             var pCompleto = pLivre + calcularCRC16(pLivre);
             
             document.getElementById("payloadTexto").value = pCompleto;
-            document.getElementById("qrcode").innerHTML = montarTabelaQR(pCompleto);
+            document.getElementById("qrcode").innerHTML = gerarQRCodeNativoSVG(pCompleto);
         };
     </script>
 </body>
