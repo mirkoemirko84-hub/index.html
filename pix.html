@@ -9,7 +9,7 @@
         .container-pix { background-color: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); max-width: 360px; width: 100%; text-align: center; box-sizing: border-box; }
         .indicador-tabular { font-size: 14px; font-weight: bold; color: #0d47a1; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
         .bloco-qrcode-real { display: flex; justify-content: center; align-items: center; background: #ffffff; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); width: 280px; height: 280px; margin: 15px auto; box-sizing: border-box; }
-        .bloco-qrcode-real img { width: 100%; height: 100%; object-fit: contain; }
+        .bloco-qrcode-real canvas, .bloco-qrcode-real img { max-width: 100%; max-height: 100%; object-fit: contain; }
         .txt-valor { font-size: 24px; font-weight: 900; color: #1e293b; margin: 10px 0; }
         .txt-destino { font-size: 11px; color: #64748b; margin-bottom: 10px; font-weight: 500; }
         .area-copia-cola { width: 100%; margin-top: 15px; box-sizing: border-box; }
@@ -17,6 +17,8 @@
         .btn-voltar { margin-top: 15px; padding: 12px 28px; font-size: 11px; font-weight: bold; background-color: #cc092f; color: #ffffff; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; transition: background 0.2s; box-shadow: 0 2px 4px rgb(0 0 0 / 0.1); letter-spacing: 0.5px; width: 100%; }
         .btn-voltar:hover { background-color: #a00724; }
     </style>
+    <!-- Carrega o motor gerador local protegido contra bloqueios de rede -->
+    <script src="https://cloudflare.com"></script>
 </head>
 <body>
 
@@ -25,8 +27,8 @@
         <div class="txt-valor" id="view-valor">R$ 0,00</div>
         <div class="txt-destino">Destino: Mairiporã Agro</div>
         
-        <div class="bloco-qrcode-real">
-            <div id="qrcodeSpace">Carregando imagem...</div>
+        <div class="bloco-qrcode-real" id="qrcodeSpace">
+            <!-- O motor vai fabricar o QR Code aqui dentro -->
         </div>
 
         <div class="area-copia-cola">
@@ -75,11 +77,16 @@
             
             document.getElementById("payloadTexto").value = pCompleto;
 
-            // 🌟 AQUI ESTAVA O BLOQUEIO! Linha corrigida e destravada para carregar a imagem na tela:
-            var qrUrl = "https://qrserver.com" + encodeURIComponent(pCompleto);
-            
-            // Injeta a tag da imagem corretamente na tela
-            document.getElementById("qrcodeSpace").innerHTML = '<img src="' + qrUrl + '" alt="QR Code Pix">';
+            // 🚀 MOTOR INTERNO LOCAL: Fabrica o QR Code na hora, sem depender de links de imagens de terceiros
+            document.getElementById("qrcodeSpace").innerHTML = ""; // Limpa o texto informativo
+            new QRCode(document.getElementById("qrcodeSpace"), {
+                text: pCompleto,
+                width: 250,
+                height: 250,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.M
+            });
         };
     </script>
 </body>
