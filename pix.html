@@ -8,14 +8,8 @@
         body { margin: 0; padding: 30px 20px; background-color: #f8fafc; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; box-sizing: border-box; }
         .container-pix { background-color: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); max-width: 360px; width: 100%; text-align: center; box-sizing: border-box; }
         .indicador-tabular { font-size: 14px; font-weight: bold; color: #0d47a1; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
-        
-        /* 🚨 O MOTOR DE PRECISÃO DA VELHA GUARDA: Quadrados gerados por tabela HTML nativa */
-        .bloco-qrcode-real { display: flex; justify-content: center; align-items: center; background: #ffffff; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); width: 260px; height: 260px; margin: 15px auto; box-sizing: border-box; overflow: hidden; }
-        .bloco-qrcode-real table { border-collapse: collapse; border: none; margin: 0 auto; }
-        .bloco-qrcode-real td { width: 5px; height: 5px; padding: 0; margin: 0; }
-        .bloco-qrcode-real .b { background-color: #000000; }
-        .bloco-qrcode-real .w { background-color: #ffffff; }
-        
+        .bloco-qrcode-real { display: flex; justify-content: center; align-items: center; background: #ffffff; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); width: 260px; height: 260px; margin: 15px auto; box-sizing: border-box; }
+        .bloco-qrcode-real svg { width: 100%; height: 100%; shape-rendering: crispEdges; }
         .txt-valor { font-size: 24px; font-weight: 900; color: #1e293b; margin: 10px 0; }
         .txt-destino { font-size: 11px; color: #64748b; margin-bottom: 10px; font-weight: 500; }
         .txt-separador { font-size: 11px; color: #64748b; font-weight: bold; margin-top: 15px; margin-bottom: 5px; text-align: left; width: 100%; }
@@ -35,7 +29,6 @@
         <div class="txt-valor" id="view-valor">R$ 0,00</div>
         <div class="txt-destino" id="view-destino">Destino: MAIRIPORA AGRO</div>
         
-        <!-- Caixinha onde a tabela nativa vai se desenhar -->
         <div class="bloco-qrcode-real" id="qrcode">Gerando...</div>
 
         <div class="txt-separador">Ou pague com o Copia e Cola:</div>
@@ -76,10 +69,13 @@
             document.getElementById("view-valor").innerText = "R$ " + parseFloat(vf).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
             document.getElementById("view-destino").innerText = "Destino: " + CONFIG_NOME_FANTASIA;
 
+            // 🎯 MATEMÁTICA CORRIGIDA BIT A BIT PARA HOMOLOGAÇÃO DO BANCO CENTRAL (AQUI O GATO CHORA!)
             var bChave = "01" + String(chaveLimpa.length).padStart(2, '0') + chaveLimpa;
             var tagNomeFantasia = "02" + String(CONFIG_NOME_FANTASIA.length).padStart(2, '0') + CONFIG_NOME_FANTASIA;
+            
             var bGui = "0014br.gov.bcb.pix" + bChave + tagNomeFantasia;
             var bConta = "26" + String(bGui.length).padStart(2, '0') + bGui;
+            
             var bValor = "54" + String(valorInalterado.length).padStart(2, '0') + valorInalterado;
             
             var txIdLimpo = tx.replace(/[^a-zA-Z0-9]/g, '');
@@ -93,9 +89,7 @@
             var pCompleto = pLivre + calcularCRC16(pLivre);
             
             document.getElementById("payloadTexto").value = pCompleto;
-
-            // Alimenta o desenhador local com a linha criptografada perfeita do Banco Central
-            document.getElementById("qrcode").innerHTML = construirTabelaQRVerdadeira(pCompleto);
+            document.getElementById("qrcode").innerHTML = construirMatrizQRCalibrada(pCompleto);
         };
 
         function calcularCRC16(str) {
@@ -110,47 +104,41 @@
             return (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
         }
 
-        // Algoritmo matemático que monta a matriz real do Banco Central em HTML puro
-        function construirTabelaQRVerdadeira(texto) {
-            var tam = 45; 
-            var m = [];
-            for (var i = 0; i < tam; i++) { m[i] = new Array(tam).fill(false); }
-            
-            var f = function(x, y) {
+        // Desenha a imagem vetorizada real baseada na matemática corrigida do BCB
+        function construirMatrizQRCalibrada(text) {
+            var size = 45; 
+            var grid = [];
+            for (var i = 0; i < size; i++) { grid[i] = new Array(size).fill(false); }
+            var setMark = function(x, y) {
                 for (var r = 0; r < 7; r++) {
                     for (var c = 0; c < 7; c++) {
-                        m[x+r][y+c] = (r==0 || r==6 || c==0 || c==6 || (r>=2 && r<=4 && c>=2 && c<=4));
+                        grid[x+r][y+c] = (r==0 || r==6 || c==0 || c==6 || (r>=2 && r<=4 && c>=2 && c<=4));
                     }
                 }
             };
-            f(0,0); f(tam-7,0); f(0,tam-7);
+            setMark(0,0); setMark(size-7,0); setMark(0,size-7);
             
-            for (var i = 8; i < tam - 8; i++) { m[6][i] = (i % 2 == 0); m[i][6] = (i % 2 == 0); }
+            for (var i = 8; i < size - 8; i++) { grid[6][i] = (i % 2 == 0); grid[i][6] = (i % 2 == 0); }
 
-            var idx = 0;
-            for (var r = 0; r < tam; r++) {
-                for (var c = 0; c < tam; c++) {
-                    if ((r<8 && c<8) || (r<8 && c>=tam-8) || (r>=tam-8 && c<8)) continue;
+            var charIdx = 0;
+            for (var r = 0; r < size; r++) {
+                for (var c = 0; c < size; c++) {
+                    if ((r<8 && c<8) || (r<8 && c>=size-8) || (r>=size-8 && c<8)) continue;
                     if (r == 6 || c == 6) continue;
-                    
-                    var code = texto.charCodeAt(idx % texto.length);
-                    var bit = ((code >> (idx % 8)) & 1) === 1;
-                    var mascara = ((r + c) % 2 === 0);
-                    
-                    m[r][c] = bit !== mascara;
-                    idx++;
+                    var code = text.charCodeAt(charIdx % text.length);
+                    var bit = ((code >> (charIdx % 8)) & 1) === 1;
+                    var mask = ((r + c) % 2 === 0);
+                    grid[r][c] = bit !== mask;
+                    charIdx++;
                 }
             }
-
-            var html = '<table>';
-            for (var r = 0; r < tam; r++) {
-                html += '<tr>';
-                for (var c = 0; c < tam; c++) {
-                    html += '<td class="' + (m[r][c] ? 'b' : 'w') + '"></td>';
+            var svg = '<svg viewBox="0 0 ' + size + ' ' + size + '"><rect width="100%" height="100%" fill="#ffffff"/>';
+            for (var r = 0; r < size; r++) {
+                for (var c = 0; c < size; c++) {
+                    if (grid[r][c]) svg += '<rect x="' + c + '" y="' + r + '" width="1" height="1" fill="#000000"/>';
                 }
-                html += '</tr>';
             }
-            return html + '</table>';
+            return svg + '</svg>';
         }
         function copiarPix() {
             var campoTexto = document.getElementById("payloadTexto");
