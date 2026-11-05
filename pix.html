@@ -10,15 +10,23 @@
         .indicador-tabular { font-size: 14px; font-weight: bold; color: #0d47a1; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
         .bloco-qrcode-real { display: flex; justify-content: center; align-items: center; background: #ffffff; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); width: 280px; height: 280px; margin: 15px auto; box-sizing: border-box; }
         .bloco-qrcode-real table { border-collapse: collapse; border: none; margin: 0 auto; }
-        .bloco-qrcode-real td { width: 4px; height: 4px; pading: 0; margin: 0; }
+        .bloco-qrcode-real td { width: 4px; height: 4px; padding: 0; margin: 0; }
         .bloco-qrcode-real .b { background-color: #000000; }
         .bloco-qrcode-real .w { background-color: #ffffff; }
         .txt-valor { font-size: 24px; font-weight: 900; color: #1e293b; margin: 10px 0; }
         .txt-destino { font-size: 11px; color: #64748b; margin-bottom: 10px; font-weight: 500; }
-        .area-copia-cola { width: 100%; margin-top: 15px; box-sizing: border-box; }
-        .input-pix { width: 100%; padding: 10px; font-size: 11px; font-family: monospace; border: 1px solid #cbd5e1; border-radius: 6px; background-color: #f1f5f9; color: #334155; text-align: center; box-sizing: border-box; }
-        .btn-voltar { margin-top: 15px; padding: 12px 28px; font-size: 11px; font-weight: bold; background-color: #cc092f; color: #ffffff; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; transition: background 0.2s; box-shadow: 0 2px 4px rgb(0 0 0 / 0.1); letter-spacing: 0.5px; width: 100%; }
+        
+        /* Divisória para o Copia e Cola */
+        .txt-separador { font-size: 11px; color: #64748b; font-weight: bold; margin-top: 15px; margin-bottom: 5px; text-align: left; width: 100%; }
+        .area-copia-cola { width: 100%; box-sizing: border-box; }
+        .input-pix { width: 100%; padding: 10px; font-size: 11px; font-family: monospace; border: 1px solid #cbd5e1; border-radius: 6px; background-color: #f1f5f9; color: #334155; text-align: center; box-sizing: border-box; margin-bottom: 8px; }
+        
+        /* Botões de Ação */
+        .btn-copiar { width: 100%; padding: 10px; font-size: 12px; font-weight: bold; background-color: #0284c7; color: #ffffff; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; transition: background 0.2s; margin-bottom: 5px; }
+        .btn-copiar:hover { background-color: #0369a1; }
+        .btn-voltar { margin-top: 10px; padding: 12px 28px; font-size: 11px; font-weight: bold; background-color: #cc092f; color: #ffffff; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; transition: background 0.2s; box-shadow: 0 2px 4px rgb(0 0 0 / 0.1); letter-spacing: 0.5px; width: 100%; }
         .btn-voltar:hover { background-color: #a00724; }
+        
         .rodape-software { margin-top: 20px; font-size: 10px; color: #94a3b8; font-family: monospace; letter-spacing: 0.5px; text-align: center; }
     </style>
 </head>
@@ -31,8 +39,11 @@
         
         <div class="bloco-qrcode-real" id="qrcode">Gerando...</div>
 
+        <div class="txt-separador">Ou pague com o Copia e Cola:</div>
         <div class="area-copia-cola">
             <input type="text" id="payloadTexto" class="input-pix" readonly onclick="this.select();" placeholder="Carregando código...">
+            <!-- Botão azul de cópia automática -->
+            <button class="btn-copiar" onclick="copiarPix()">📋 Copiar Código Pix</button>
         </div>
 
         <button class="btn-voltar" onclick="window.location.href='index.html'">Voltar para Maquininha</button>
@@ -52,7 +63,6 @@
             return (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
         }
 
-        // Gerador QR integrado em JS puro sem bibliotecas
         function montarTabelaQR(texto) {
             var tamanho = 55; 
             var matriz = [];
@@ -90,6 +100,23 @@
             return html;
         }
 
+        // Função para copiar automaticamente a linha de texto
+        function copiarPix() {
+            var campoTexto = document.getElementById("payloadTexto");
+            campoTexto.select();
+            campoTexto.setSelectionRange(0, 99999); // Suporte para celulares
+            navigator.clipboard.writeText(campoTexto.value);
+            
+            var botao = document.querySelector(".btn-copiar");
+            botao.innerText = "✓ Copiado com Sucesso!";
+            botao.style.backgroundColor = "#16a34a"; // Muda para verde temporariamente
+            
+            setTimeout(function() {
+                botao.innerText = "📋 Copiar Código Pix";
+                botao.style.backgroundColor = "#0284c7"; // Volta para azul
+            }, 2000);
+        }
+
         window.onload = function() {
             var params = new URLSearchParams(window.location.search);
             var vf = params.get('v');
@@ -120,8 +147,6 @@
             var pCompleto = pLivre + calcularCRC16(pLivre);
             
             document.getElementById("payloadTexto").value = pCompleto;
-
-            // Desenha a tabela direto por HTML interno, sem chances de falha ou bloqueio externo
             document.getElementById("qrcode").innerHTML = montarTabelaQR(pCompleto);
         };
     </script>
