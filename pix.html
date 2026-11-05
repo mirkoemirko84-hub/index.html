@@ -9,13 +9,7 @@
         .container-pix { background-color: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); max-width: 360px; width: 100%; text-align: center; box-sizing: border-box; }
         .indicador-tabular { font-size: 14px; font-weight: bold; color: #0d47a1; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
         .bloco-qrcode-real { display: flex; justify-content: center; align-items: center; background: #ffffff; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); width: 260px; height: 260px; margin: 15px auto; box-sizing: border-box; }
-        
-        /* O RETORNO DA VELHA GUARDA: Estilo de tabela nativa que funcionou na sua tela */
-        .bloco-qrcode-real table { border-collapse: collapse; border: none; margin: 0 auto; }
-        .bloco-qrcode-real td { width: 4px; height: 4px; padding: 0; margin: 0; }
-        .bloco-qrcode-real .b { background-color: #000000; }
-        .bloco-qrcode-real .w { background-color: #ffffff; }
-        
+        .bloco-qrcode-real img { max-width: 100%; max-height: 100%; object-fit: contain; margin: 0 auto; }
         .txt-valor { font-size: 24px; font-weight: 900; color: #1e293b; margin: 10px 0; }
         .txt-destino { font-size: 11px; color: #64748b; margin-bottom: 10px; font-weight: 500; }
         .txt-separador { font-size: 11px; color: #64748b; font-weight: bold; margin-top: 15px; margin-bottom: 5px; text-align: left; width: 100%; }
@@ -33,10 +27,9 @@
     <div class="container-pix">
         <div class="indicador-tabular">Código de Venda Oficial BCB ⬇️</div>
         <div class="txt-valor" id="view-valor">R$ 0,00</div>
-        <div class="txt-destino">Destino: Mairiporã Agro</div>
+        <div class="txt-destino" id="view-destino">Destino: Mairiporã Agro</div>
         
-        <!-- Onde a tabela estável vai se desenhar -->
-        <div class="bloco-qrcode-real" id="qrcode">Gerando...</div>
+        <div class="bloco-qrcode-real" id="qrcode">Carregando imagem...</div>
 
         <div class="txt-separador">Ou pague com o Copia e Cola:</div>
         <div class="area-copia-cola">
@@ -49,6 +42,56 @@
     </div>
 
     <script>
+        window.onload = function() {
+            
+            // ##########################################################################
+            // ###                    ÁREA DE CONFIGURAÇÃO RÁPIDA                     ###
+            // ###  Altere os dados abaixo para transferir o sistema para outro amigo ###
+            // ##########################################################################
+            
+            var CONFIG_NOME_TITULAR  = "JOSE CARLOS SUGUIMOTO"; 
+            var CONFIG_CIDADE_LOJA   = "MAIRIPORA";             
+            var CONFIG_NOME_FANTASIA = "MAIRIPORA AGRO";        
+
+            // ##########################################################################
+            // ###             FIM DA CONFIGURAÇÃO - MOTOR DO SISTEMA BCB             ###
+            // ##########################################################################
+
+            var params = new URLSearchParams(window.location.search);
+            var vf = params.get('v');
+            var ch = params.get('ch');
+            var tx = params.get('tx') || "***";
+            if(!vf || !ch) { document.getElementById("qrcode").innerHTML = "<b style='color:red;'>Erro nos dados.</b>"; return; }
+
+            var chaveLimpa = ch.trim();
+            var valorInalterado = parseFloat(vf).toFixed(2);
+            
+            document.getElementById("view-valor").innerText = "R$ " + parseFloat(vf).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+            document.getElementById("view-destino").innerText = "Destino: " + CONFIG_NOME_FANTASIA;
+
+            var bChave = "01" + String(chaveLimpa.length).padStart(2, '0') + chaveLimpa;
+            var tagNomeFantasia = "02" + String(CONFIG_NOME_FANTASIA.length).padStart(2, '0') + CONFIG_NOME_FANTASIA;
+            var bGui = "0014br.gov.bcb.pix" + bChave + tagNomeFantasia;
+            var bConta = "26" + String(bGui.length).padStart(2, '0') + bGui;
+            var bValor = "54" + String(valorInalterado.length).padStart(2, '0') + valorInalterado;
+            
+            var txIdLimpo = tx.replace(/[^a-zA-Z0-9]/g, '');
+            var bSub62 = "05" + String(txIdLimpo.length).padStart(2, '0') + txIdLimpo;
+            var bTxid = "62" + String(bSub62.length).padStart(2, '0') + bSub62;
+
+            var tagNomeTitular = "59" + String(CONFIG_NOME_TITULAR.length).padStart(2, '0') + CONFIG_NOME_TITULAR;
+            var tagCidadeLoja  = "60" + String(CONFIG_CIDADE_LOJA.length).padStart(2, '0') + CONFIG_CIDADE_LOJA;
+
+            var pLivre = "000201" + bConta + "520400005303986" + bValor + "5802BR" + tagNomeTitular + tagCidadeLoja + bTxid + "6304";
+            var pCompleto = pLivre + calcularCRC16(pLivre);
+            
+            document.getElementById("payloadTexto").value = pCompleto;
+
+            // Motor de imagem integrado ao drible do Zap (Livre de bloqueios)
+            var qrUrl = "https://whatsapp.com" + encodeURIComponent(pCompleto);
+            document.getElementById("qrcode").innerHTML = '<img src="' + qrUrl + '" alt="QR Code Pix">';
+        };
+
         function calcularCRC16(str) {
             var crc = 0xFFFF;
             for (var c = 0; c < str.length; c++) {
@@ -60,54 +103,19 @@
             }
             return (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
         }
-
-        // 🔄 RESTAURADO: Gerador de tabelas que quebra o bloqueio de imagens da sua rede
-        function montarTabelaQR(texto) {
-            var tamanho = 55; 
-            var matriz = [];
-            for (var i = 0; i < tamanho; i++) { matriz[i] = new Array(tamanho).fill(false); }
-            
-            var marcador = function(x, y) {
-                for (var r = 0; r < 7; r++) {
-                    for (var c = 0; c < 7; c++) {
-                        matriz[x+r][y+c] = (r==0 || r==6 || c==0 || c==6 || (r>=2 && r<=4 && c>=2 && c<=4));
-                    }
-                }
-            };
-            marcador(0,0); marcador(tamanho-7,0); marcador(0,tamanho-7);
-
-            var tIdx = 0;
-            for (var r = 0; r < tamanho; r++) {
-                for (var c = 0; c < tamanho; c++) {
-                    if ((r<8 && c<8) || (r<8 && c>=tamanho-8) || (r>=tamanho-8 && c<8)) continue;
-                    var cod = texto.charCodeAt(tIdx % texto.length);
-                    matriz[r][c] = ((r + c) % 2 === 0) ? (cod % 2 === 0) : ((r * c) % 3 === 0);
-                    tIdx++;
-                }
-            }
-
-            var html = '<table>';
-            for (var r = 0; r < tamanho; r++) {
-                html += '<tr>';
-                for (var c = 0; c < tamanho; c++) {
-                    html += '<td class="' + (matriz[r][c] ? 'b' : 'w') + '"></td>';
-                }
-                html += '</tr>';
-            }
-            html += '</table>';
-            return html;
-        }
-
         function copiarPix() {
             var campoTexto = document.getElementById("payloadTexto");
             campoTexto.select();
             campoTexto.setSelectionRange(0, 99999);
             
             var copiouComSucesso = false;
+            
+            // Método 1: Tenta pela API moderna (Celulares)
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(campoTexto.value);
                 copiouComSucesso = true;
             } else {
+                // Método 2: Sistema clássico de segurança (Computadores)
                 try {
                     document.execCommand('copy');
                     copiouComSucesso = true;
@@ -126,36 +134,6 @@
                 }, 2000);
             }
         }
-
-        window.onload = function() {
-            var params = new URLSearchParams(window.location.search);
-            var vf = params.get('v');
-            var ch = params.get('ch');
-            var tx = params.get('tx') || "***";
-            if(!vf || !ch) { document.getElementById("qrcode").innerHTML = "<b style='color:red;'>Erro nos dados.</b>"; return; }
-
-            var chaveLimpa = ch.trim();
-            var valorInalterado = parseFloat(vf).toFixed(2);
-            document.getElementById("view-valor").innerText = "R$ " + parseFloat(vf).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-
-            // 🎯 MATEMÁTICA CORRIGIDA DO BANCO CENTRAL
-            var bChave = "01" + String(chaveLimpa.length).padStart(2, '0') + chaveLimpa;
-            var bGui = "0014br.gov.bcb.pix" + bChave;
-            var bConta = "26" + String(bGui.length).padStart(2, '0') + bGui;
-            var bValor = "54" + String(valorInalterado.length).padStart(2, '0') + valorInalterado;
-            
-            var txIdLimpo = tx.replace(/[^a-zA-Z0-9]/g, '');
-            var bSub62 = "05" + String(txIdLimpo.length).padStart(2, '0') + txIdLimpo;
-            var bTxid = "62" + String(bSub62.length).padStart(2, '0') + bSub62;
-
-            var pLivre = "000201" + bConta + "520400005303986" + bValor + "5802BR5921JOSE CARLOS SUGUIMOTO6009MAIRIPORA" + bTxid + "6304";
-            var pCompleto = pLivre + calcularCRC16(pLivre);
-            
-            document.getElementById("payloadTexto").value = pCompleto;
-            
-            // Desenha a tabela clássica que você viu na tela antes
-            document.getElementById("qrcode").innerHTML = montarTabelaQR(pCompleto);
-        };
     </script>
 </body>
 </html>
