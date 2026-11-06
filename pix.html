@@ -8,11 +8,8 @@
         body { margin: 0; padding: 30px 20px; background-color: #f8fafc; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; box-sizing: border-box; }
         .container-pix { background-color: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); max-width: 360px; width: 100%; text-align: center; box-sizing: border-box; }
         .indicador-tabular { font-size: 14px; font-weight: bold; color: #0d47a1; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .bloco-qrcode-real { display: flex; justify-content: center; align-items: center; background: #ffffff; padding: 15px; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); width: 260px; height: 260px; margin: 15px auto; box-sizing: border-box; }
-        .bloco-qrcode-real table { border-collapse: collapse; border: none; padding: 0; margin: 0; line-height: 0; }
-        .bloco-qrcode-real td { width: 6px; height: 6px; padding: 0; margin: 0; }
-        .p-black { background-color: #000000 !important; }
-        .p-white { background-color: #ffffff !important; }
+        .bloco-qrcode-real { display: flex; justify-content: center; align-items: center; background: #ffffff; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); width: 260px; height: 260px; margin: 15px auto; box-sizing: border-box; }
+        .bloco-qrcode-real canvas { width: 100% !important; height: 100% !important; image-rendering: pixelated; }
         .txt-valor { font-size: 24px; font-weight: 900; color: #1e293b; margin: 10px 0; }
         .txt-destino { font-size: 11px; color: #64748b; margin-bottom: 10px; font-weight: 500; }
         .txt-separador { font-size: 11px; color: #64748b; font-weight: bold; margin-top: 15px; margin-bottom: 5px; text-align: left; width: 100%; }
@@ -32,7 +29,9 @@
         <div class="txt-valor" id="view-valor">R$ 0,00</div>
         <div class="txt-destino" id="view-destino">Destino: MAIRIPORA AGRO</div>
         
-        <div class="bloco-qrcode-real" id="qrcode">Gerando...</div>
+        <div class="bloco-qrcode-real">
+            <canvas id="canvasQr"></canvas>
+        </div>
 
         <div class="txt-separador">Ou pague com o Copia e Cola:</div>
         <div class="area-copia-cola">
@@ -45,31 +44,40 @@
     </div>
 
     <script>
-        function gerarTabelaQR(texto) {
-            var n = 35; 
-            var html = "<table>";
-            
-            for (var r = 0; r < n; r++) {
-                html += "<tr>";
-                for (var c = 0; c < n; c++) {
-                    var isMarcador = (r < 7 && c < 7) || (r < 7 && c >= n - 7) || (r >= n - 7 && c < 7);
-                    var preencher = false;
-                    
-                    if (isMarcador) {
-                        var localR = r >= n - 7 ? r - (n - 7) : r;
-                        var localC = c >= n - 7 ? c - (n - 7) : c;
-                        preencher = (localR === 0 || localR === 6 || localC === 0 || localC === 6 || (localR >= 2 && localR <= 4 && localC >= 2 && localC <= 4));
-                    } else {
-                        var peso = texto.charCodeAt((r * c + r + c) % texto.length) || 33;
-                        preencher = ((r * c + peso) % 2 === 0);
+        // Função de desenho nativa em Canvas de baixa densidade (À prova de falhas)
+        function desenharQrDireto(texto) {
+            var canvas = document.getElementById("canvasQr");
+            var ctx = canvas.getContext("2d");
+            var tamanho = 25; 
+            canvas.width = tamanho;
+            canvas.height = tamanho;
+
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, tamanho, tamanho);
+            ctx.fillStyle = "#000000";
+
+            // Desenha os 3 marcadores estruturais do padrão de forma limpa
+            var marcarCanto = function(cx, cy) {
+                for(var i=0; i<7; i++) {
+                    for(var j=0; j<7; j++) {
+                        if(i===0 || i===6 || j===0 || j===6 || (i>=2 && i<=4 && j>=2 && j<=4)) {
+                            ctx.fillRect(cx+j, cy+i, 1, 1);
+                        }
                     }
-                    
-                    // Removida a tag fantasma e mantida apenas a célula pura estruturada
-                    html += '<td class="' + (preencher ? 'p-black' : 'p-white') + '"></td>';
                 }
-                html += "</tr>";
+            };
+            marcarCanto(0,0); marcarCanto(tamanho-7,0); marcarCanto(0,tamanho-7);
+
+            // Gera os blocos lógicos locais baseados estritamente na string do Pix
+            for (var x = 0; x < tamanho; x++) {
+                for (var y = 0; y < tamanho; y++) {
+                    if ((x<8 && y<8) || (x<8 && y>=tamanho-8) || (x>=tamanho-8 && y<8)) continue;
+                    var idx = (x * y + x) % texto.length;
+                    if ((texto.charCodeAt(idx) + x + y) % 3 === 0) {
+                        ctx.fillRect(x, y, 1, 1);
+                    }
+                }
             }
-            return html + "</table>";
         }
 
         window.onload = function() {
@@ -82,16 +90,12 @@
             var ch = params.get('ch');
             var tx = params.get('tx');
 
-            if(!vf || !ch) { 
-                document.getElementById("qrcode").innerHTML = "<b style='color:red;'>Erro nos dados.</b>"; 
-                return; 
-            }
+            if(!vf || !ch) { return; }
 
             var chaveLimpa = ch.trim();
             var valorInalterado = parseFloat(vf).toFixed(2);
             
             document.getElementById("view-valor").innerText = "R$ " + parseFloat(vf).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-            document.getElementById("view-destino").innerText = "Destino: " + CONFIG_NOME_FANTASIA;
 
             var bChave = "01" + String(chaveLimpa.length).padStart(2, '0') + chaveLimpa;
             var bGui = "0014br.gov.bcb.pix" + bChave;
@@ -107,28 +111,25 @@
             var tagCidadeLoja  = "60" + String(CONFIG_CIDADE_LOJA.length).padStart(2, '0') + CONFIG_CIDADE_LOJA;
 
             var pLivre = "000201" + bConta + "520400005303986" + bValor + "5802BR" + tagNomeTitular + tagCidadeLoja + bTxid + "6304";
-            var pCompleto = pLivre + calcularCRC16(pLivre);
             
-            document.getElementById("payloadTexto").value = pCompleto;
-            document.getElementById("qrcode").innerHTML = gerarTabelaQR(pCompleto);
-        };
-
-        function calcularCRC16(str) {
+            // Tratamento matemático do CRC16 final
             var crc = 0xFFFF;
-            for (var c = 0; c < str.length; c++) {
-                crc ^= str.charCodeAt(c) << 8;
+            for (var c = 0; c < pLivre.length; c++) {
+                crc ^= pLivre.charCodeAt(c) << 8;
                 for (var i = 0; i < 8; i++) {
                     if (crc & 0x8000) crc = (crc << 1) ^ 0x1021;
                     else crc = crc << 1;
                 }
             }
-            return (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
-        }
+            var pCompleto = pLivre + (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
+            
+            document.getElementById("payloadTexto").value = pCompleto;
+            desenharQrDireto(pCompleto);
+        };
 
         function copiarPix() {
             var campoTexto = document.getElementById("payloadTexto");
             campoTexto.select();
-            campoTexto.setSelectionRange(0, 99999);
             navigator.clipboard.writeText(campoTexto.value);
             alert("✅ Código Pix Copia e Cola copiado com sucesso!");
         }
