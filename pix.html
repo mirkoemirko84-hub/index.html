@@ -46,28 +46,26 @@
 
     <script>
         function gerarTabelaQR(texto) {
-            var n = 35; // Matriz quadrada estável calibrada para tabelas nativas
+            var n = 35; 
             var html = "<table>";
             
             for (var r = 0; r < n; r++) {
                 html += "<tr>";
                 for (var c = 0; c < n; c++) {
-                    // Lógica robusta e simplificada para desenhar as marcas quadradas de canto
                     var isMarcador = (r < 7 && c < 7) || (r < 7 && c >= n - 7) || (r >= n - 7 && c < 7);
                     var preencher = false;
                     
                     if (isMarcador) {
-                        // Coordenadas internas dos marcadores de posicionamento padrões
                         var localR = r >= n - 7 ? r - (n - 7) : r;
                         var localC = c >= n - 7 ? c - (n - 7) : c;
                         preencher = (localR === 0 || localR === 6 || localC === 0 || localC === 6 || (localR >= 2 && localR <= 4 && localC >= 2 && localC <= 4));
                     } else {
-                        // Algoritmo matemático estrito baseado no hash dos caracteres do Pix
                         var peso = texto.charCodeAt((r * c + r + c) % texto.length) || 33;
                         preencher = ((r * c + peso) % 2 === 0);
                     }
                     
-                    html += '<img class="' + (preencher ? 'p-black' : 'p-white') + '"><td class="' + (preencher ? 'p-black' : 'p-white') + '"></td>';
+                    // Removida a tag fantasma e mantida apenas a célula pura estruturada
+                    html += '<td class="' + (preencher ? 'p-black' : 'p-white') + '"></td>';
                 }
                 html += "</tr>";
             }
