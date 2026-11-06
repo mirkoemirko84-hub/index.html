@@ -5,87 +5,147 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel de Faturamento | Pix Puro</title>
     <style>
-        body { background-color: #f8fafc; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-        .container { background-color: #ffffff; padding: 16px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); max-width: 360px; width: 100%; display: flex; flex-direction: column; box-sizing: border-box; }
-        .tarja-seguranca-topo { background-color: #0d47a1; color: #ffffff; font-size: 9px; font-weight: bold; padding: 5px 8px; border-radius: 4px; text-transform: uppercase; margin-bottom: 10px; text-align: center; letter-spacing: 0.5px; }
-        .bloco-texto-topo { text-align: center; margin-bottom: 12px; }
-        .topo-titulo { font-size: 15px; font-weight: 900; color: #cc092f; text-transform: uppercase; margin: 0 0 4px 0; line-height: 1.2; }
-        .sub-titulo { font-size: 10px; font-weight: bold; color: #475569; text-transform: uppercase; margin: 0 0 6px 0; }
-        .referencia-credito { font-size: 9px; color: #64748b; background-color: #f1f5f9; padding: 4px; border-radius: 4px; border-left: 3px solid #0d47a1; margin-top: 2px; }
-        .campo-grupo { width: 100%; margin-bottom: 8px; box-sizing: border-box; }
-        .campo-grupo label { display: block; font-size: 9px; font-weight: bold; color: #475569; margin-bottom: 4px; text-transform: uppercase; }
-        .campo-grupo input, .campo-grupo select { width: 100%; padding: 8px; font-size: 14px; font-weight: bold; border: 2px solid #e2e8f0; border-radius: 6px; box-sizing: border-box; color: #1e293b; }
-        .campo-grupo input:focus, .campo-grupo select:focus { border-color: #cc092f; outline: none; }
-        .grupo-botoes { display: flex; gap: 6px; width: 100%; margin-top: 8px; }
-        .btn { flex: 1; padding: 10px; font-size: 11px; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; transition: background 0.2s; }
-        .btn-gerar { background-color: #cc092f; color: #ffffff; }
+        body { margin: 0; padding: 20px; background-color: #f1f5f9; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; box-sizing: border-box; }
+        .container { background-color: #ffffff; padding: 25px; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); max-width: 380px; width: 100%; box-sizing: border-box; border-top: 5px solid #0d47a1; }
+        .header { text-align: center; margin-bottom: 20px; }
+        .header h1 { font-size: 16px; font-weight: 800; color: #0d47a1; margin: 0 0 5px 0; text-transform: uppercase; letter-spacing: 0.5px; }
+        .header p { font-size: 11px; color: #64748b; margin: 0; font-weight: 500; }
+        .destino-box { background-color: #eff6ff; padding: 12px; border-radius: 8px; border: 1px dashed #bfdbfe; font-size: 11px; color: #1e40af; font-weight: 600; text-align: center; margin-bottom: 20px; }
+        .campo-grupo { margin-bottom: 15px; width: 100%; text-align: left; }
+        .campo-grupo label { display: block; font-size: 11px; font-weight: 700; color: #334155; margin-bottom: 6px; text-transform: uppercase; }
+        .campo-grupo input, .campo-grupo select { width: 100%; padding: 12px; font-size: 14px; border: 1px solid #cbd5e1; border-radius: 8px; background-color: #f8fafc; color: #1e293b; box-sizing: border-box; font-weight: 500; }
+        .campo-grupo input:focus { border-color: #0284c7; outline: none; background-color: #ffffff; }
+        .chave-destaque { font-family: monospace; font-size: 11px; color: #0284c7; background: #f0f9ff; padding: 6px; border-radius: 4px; display: block; text-align: center; margin-top: 4px; border: 1px solid #e0f2fe; }
+        .botoes-linha { display: flex; gap: 10px; margin-top: 20px; }
+        .btn { flex: 1; padding: 14px; font-size: 12px; font-weight: 700; border: none; border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s; text-align: center; text-decoration: none; }
         .btn-limpar { background-color: #e2e8f0; color: #475569; }
+        .btn-limpar:hover { background-color: #cbd5e1; }
+        .btn-gerar { background-color: #0d47a1; color: #ffffff; }
+        .btn-gerar:hover { background-color: #0a3980; }
+        
+        /* 📱 SEÇÃO EXPANSÍVEL DO COPIA E COLA EXPEDIDO (ESTILO APP CELULAR) */
+        .bloco-copia-rapido { margin-top: 20px; padding-top: 15px; border-top: 2px dashed #e2e8f0; display: none; width: 100%; }
+        .txt-aviso { font-size: 11px; color: #475569; font-weight: bold; text-align: left; margin-bottom: 6px; }
+        .input-payload { width: 100%; padding: 10px; font-size: 11px; font-family: monospace; border: 1px solid #cbd5e1; border-radius: 6px; background-color: #f1f5f9; color: #334155; text-align: center; box-sizing: border-box; margin-bottom: 8px; }
+        .btn-copiar-action { width: 100%; padding: 12px; font-size: 12px; font-weight: bold; background-color: #0284c7; color: #ffffff; border: none; border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+        .btn-copiar-action:hover { background-color: #0369a1; }
+        .link-qrcode-avancar { display: block; font-size: 12px; font-weight: bold; color: #cc092f; text-decoration: none; padding: 10px; border: 1px solid #fca5a5; background: #fff5f5; border-radius: 8px; text-align: center; margin-top: 5px; transition: background 0.2s; }
+        .link-qrcode-avancar:hover { background: #fee2e2; }
     </style>
 </head>
 <body>
+
     <div class="container">
-        <div class="tarja-seguranca-topo">🛡️ LIQUIDAÇÃO REAL BCB TIMED</div>
-        <div class="bloco-texto-topo">
-            <div class="topo-titulo">Ferramenta de Pagamento</div>
-            <div class="sub-titulo">Sem taxas e sem juros embutidos</div>
-            <div class="referencia-credito">Destino do Crédito: Mairiporã Agro — José Carlos Suguimoto</div>
+        <div class="header">
+            <h1>🛡️ Liquidação Real BCB Timed</h1>
+            <p>Ferramenta de Pagamento · Sem taxas embutidas</p>
+        </div>
+
+        <div class="destino-box">
+            Destino do Crédito: Mairiporã Agro — José Carlos Suguimoto
         </div>
 
         <div class="campo-grupo">
-            <label for="tipoChave">Tipo de Chave Pix</label>
-            <select id="tipoChave" onchange="ajustarPlaceholder()">
-                <option value="aleatoria">Chave Aleatória (UUID)</option>
-                <option value="cpf">CPF (apenas números)</option>
-                <option value="cnpj">CNPJ (apenas números)</option>
-                <option value="celular">Celular (Ex: +5511999999999)</option>
-                <option value="email">E-mail</option>
+            <label>Tipo de Chave Pix</label>
+            <select id="tipoChave">
+                <option value="uuid">Chave Aleatória (UUID)</option>
             </select>
+            <span class="chave-destaque" id="viewChave">3d4ee862-439d-481d-9f5b-07d69a7182f6</span>
         </div>
 
         <div class="campo-grupo">
-            <label for="chavePix">Sua Chave Cadastrada</label>
-            <input type="text" id="chavePix" value="3d4ee862-439d-481d-9f5b-07d69a7182f6">
+            <label>Valor do Faturamento (R$)</label>
+            <input type="number" id="valorFaturamento" step="0.01" placeholder="0,00" oninput="calcularStringPixInline()">
         </div>
 
         <div class="campo-grupo">
-            <label for="valorVenda">Valor do Faturamento (R$)</label>
-            <input type="number" id="valorVenda" step="0.01" placeholder="0,00" min="0.01">
+            <label>Identificador da Venda (TXID) - Opcional</label>
+            <input type="text" id="txidVenda" value="***" placeholder="***" oninput="calcularStringPixInline()">
         </div>
 
-        <div class="campo-grupo">
-            <label for="txid">Identificador da Venda (TXID) - Opcional</label>
-            <input type="text" id="txid" value="***" maxlength="25">
+        <div class="botoes-linha">
+            <button class="btn btn-limpar" onclick="limparPainel()">Limpar</button>
+            <button class="btn btn-gerar" onclick="irParaTelaDoQRCode()">Gerar Pix</button>
         </div>
 
-        <div class="grupo-botoes">
-            <button class="btn btn-limpar" onclick="document.getElementById('valorVenda').value=''">Limpar</button>
-            <button class="btn btn-gerar" onclick="avancarParaPix()">Gerar Pix</button>
+        <!-- 🚀 MANOBRA DE TELA INSTANTÂNEA: APARECE O COPIA E COLA E DIRECIONA O QR CODE -->
+        <div class="bloco-copia-rapido" id="areaCopiaRapida">
+            <div class="txt-aviso">Pague com o Copia e Cola:</div>
+            <input type="text" id="stringGerada" class="input-payload" readonly onclick="this.select();">
+            <button class="btn-copiar-action" onclick="copiarCodigoRapido()">📋 Copiar Código Pix</button>
+            
+            <!-- Indicação visual clara para transição de tela -->
+            <a href="#" id="linkSeguirPagamento" class="link-qrcode-avancar">👉 Ver QR Code Visual na Tela 2</a>
         </div>
     </div>
 
-       <script>
-        function ajustarPlaceholder() {
-            var t = document.getElementById("tipoChave").value;
-            var c = document.getElementById("chavePix");
-            if(t === "aleatoria") c.value = "3d4ee862-439d-481d-9f5b-07d69a7182f6";
-            if(t === "cpf") c.value = "00000000000";
-            if(t === "cnpj") c.value = "00000000000000";
-            if(t === "celular") c.value = "+5511999999999";
-            if(t === "email") c.value = "mirkoemirko84@gmail.com";
+    <script>
+        var CHAVE_FIXA = "3d4ee862-439d-481d-9f5b-07d69a7182f6";
+
+        function calcularStringPixInline() {
+            var vf = document.getElementById("valorFaturamento").value;
+            var tx = document.getElementById("txidVenda").value || "***";
+            var areaCopia = document.getElementById("areaCopiaRapida");
+            
+            if(!vf || parseFloat(vf) <= 0) {
+                areaCopia.style.display = "none";
+                return;
+            }
+
+            // MATEMÁTICA BR CODE COMPACTA
+            var valorInalterado = parseFloat(vf).toFixed(2);
+            var bChave = "01" + String(CHAVE_FIXA.length).padStart(2, '0') + CHAVE_FIXA;
+            var bGui = "0014br.gov.bcb.pix" + bChave;
+            var bConta = "26" + String(bGui.length).padStart(2, '0') + bGui;
+            var bValor = "54" + String(valorInalterado.length).padStart(2, '0') + valorInalterado;
+            
+            var txIdLimpo = tx.replace(/[^a-zA-Z0-9]/g, '');
+            if (txIdLimpo === "" || tx === "***") { txIdLimpo = "***"; }
+            var bSub62 = "05" + String(txIdLimpo.length).padStart(2, '0') + txIdLimpo;
+            var bTxid = "62" + String(bSub62.length).padStart(2, '0') + bSub62;
+
+            var pLivre = "000201" + bConta + "520400005303986" + bValor + "5802BR5921JOSE CARLOS SUGUIMOTO6009MAIRIPORA" + bTxid + "6304";
+            
+            // CRC16
+            var crc = 0xFFFF;
+            for (var c = 0; c < pLivre.length; c++) {
+                crc ^= pLivre.charCodeAt(c) << 8;
+                for (var i = 0; i < 8; i++) {
+                    if (crc & 0x8000) crc = (crc << 1) ^ 0x1021;
+                    else crc = crc << 1;
+                }
+            }
+            var stringFinal = pLivre + (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
+            
+            // Exibe e injeta na hora na parte de baixo da tela
+            document.getElementById("stringGerada").value = stringFinal;
+            areaCopia.style.display = "block";
+
+            // Modifica o destino do link para mandar os parâmetros exatos para a Tela 2 (pix.html)
+            document.getElementById("linkSeguirPagamento").href = "pix.html?v=" + vf + "&ch=" + encodeURIComponent(CHAVE_FIXA) + "&tx=" + encodeURIComponent(tx);
         }
 
-        function avancarParaPix() {
-            var v = parseFloat(document.getElementById("valorVenda").value);
-            if (isNaN(v) || v <= 0) { alert("Valor inválido."); return; }
-            var vf = v.toFixed(2);
-            var ch = encodeURIComponent(document.getElementById("chavePix").value.trim());
-            var tx = encodeURIComponent(document.getElementById("txid").value.trim() || "***");
-            
-            // 🛠️ TRAVA MECÂNICA ANTI-CACHE (Pega a hora, minuto e segundo exato)
-            var cBust = new Date().getTime();
-            
-            // Colocamos o chute inédito na rede com o "&nocache="
-            window.location.href = "pix.html?v=" + vf + "&ch=" + ch + "&tx=" + tx + "&nocache=" + cBust;
+        function irParaTelaDoQRCode() {
+            var vf = document.getElementById("valorFaturamento").value;
+            if(!vf || parseFloat(vf) <= 0) {
+                alert("Por favor, digite um valor válido de faturamento.");
+                return;
+            }
+            var tx = document.getElementById("txidVenda").value || "***";
+            window.location.href = "pix.html?v=" + vf + "&ch=" + encodeURIComponent(CHAVE_FIXA) + "&tx=" + encodeURIComponent(tx);
+        }
+
+        function copiarCodigoRapido() {
+            var campo = document.getElementById("stringGerada");
+            campo.select();
+            navigator.clipboard.writeText(campo.value);
+            alert("✅ Pix Copia e Cola copiado!");
+        }
+
+        function limparPainel() {
+            document.getElementById("valorFaturamento").value = "";
+            document.getElementById("txidVenda").value = "***";
+            document.getElementById("areaCopiaRapida").style.display = "none";
         }
     </script>
 </body>
