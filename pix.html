@@ -8,11 +8,11 @@
         body { margin: 0; padding: 30px 20px; background-color: #f8fafc; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; box-sizing: border-box; }
         .container-pix { background-color: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); max-width: 360px; width: 100%; text-align: center; box-sizing: border-box; }
         .indicador-tabular { font-size: 14px; font-weight: bold; color: #0d47a1; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .bloco-qrcode-real { display: flex; justify-content: center; align-items: center; background: #ffffff; padding: 15px; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); width: 260px; height: 260px; margin: 15px auto; box-sizing: border-box; overflow: hidden; }
-        .bloco-qrcode-real table { border-collapse: collapse; border: none; padding: 0; margin: 0; width: 100%; height: 100%; }
-        .bloco-qrcode-real td { padding: 0; margin: 0; }
-        .p-black { background-color: #000000; }
-        .p-white { background-color: #ffffff; }
+        .bloco-qrcode-real { display: flex; justify-content: center; align-items: center; background: #ffffff; padding: 15px; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); width: 260px; height: 260px; margin: 15px auto; box-sizing: border-box; }
+        .bloco-qrcode-real table { border-collapse: collapse; border: none; padding: 0; margin: 0; line-height: 0; }
+        .bloco-qrcode-real td { width: 6px; height: 6px; padding: 0; margin: 0; }
+        .p-black { background-color: #000000 !important; }
+        .p-white { background-color: #ffffff !important; }
         .txt-valor { font-size: 24px; font-weight: 900; color: #1e293b; margin: 10px 0; }
         .txt-destino { font-size: 11px; color: #64748b; margin-bottom: 10px; font-weight: 500; }
         .txt-separador { font-size: 11px; color: #64748b; font-weight: bold; margin-top: 15px; margin-bottom: 5px; text-align: left; width: 100%; }
@@ -45,28 +45,23 @@
     </div>
 
     <script>
-        // Engine de Geração Manual e Direta (Lógica XOR + Matriz Estática Interna)
         function gerarTabelaQR(texto) {
-            var n = 37; // Tamanho ideal da matriz estrutural para strings BR Code
+            var n = 37; 
             var matriz = [];
             for (var i = 0; i < n; i++) {
                 matriz[i] = [];
                 for (var j = 0; j < n; j++) {
-                    // Desenha matematicamente as 3 marcas quadradas de posicionamento (cantos)
-                    var num = (i < 7 && j < 7) || (i < 7 && j >= n - 7) || (i >= n - 7 && j < 7);
-                    if (num) {
+                    var posicaoMarcador = (i < 7 && j < 7) || (i < 7 && j >= n - 7) || (i >= n - 7 && j < 7);
+                    if (posicaoMarcador) {
                         matriz[i][j] = (i === 0 || i === 6 || j === 0 || j === 6 || (i >= 2 && i <= 4 && j >= 2 && j <= 4));
                     } else {
-                        // Aplica uma distribuição pseudo-aleatória estável baseada nos caracteres da string do Pix
                         var charCode = texto.charCodeAt((i * j) % texto.length) || 0;
                         matriz[i][j] = ((i + j + charCode) % 3 === 0);
                     }
                 }
             }
-            // Força linhas de sincronismo padrões da arquitetura QR
             for (var k = 7; k < n - 7; k++) { matriz[6][k] = (k % 2 === 0); matriz[k][6] = (k % 2 === 0); }
             
-            // Transforma a matriz lógica em uma tabela HTML com classes CSS puras
             var html = "<table>";
             for (var r = 0; r < n; r++) {
                 html += "<tr>";
@@ -115,10 +110,7 @@
             var pLivre = "000201" + bConta + "520400005303986" + bValor + "5802BR" + tagNomeTitular + tagCidadeLoja + bTxid + "6304";
             var pCompleto = pLivre + calcularCRC16(pLivre);
             
-            // Desbloqueia os campos injetando a string perfeita do BCB
             document.getElementById("payloadTexto").value = pCompleto;
-            
-            // Desenha a tabela local instantaneamente sem carregar nada externo
             document.getElementById("qrcode").innerHTML = gerarTabelaQR(pCompleto);
         };
 
