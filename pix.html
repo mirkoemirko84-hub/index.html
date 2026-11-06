@@ -8,8 +8,9 @@
         body { margin: 0; padding: 30px 20px; background-color: #f8fafc; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; box-sizing: border-box; }
         .container-pix { background-color: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); max-width: 360px; width: 100%; text-align: center; box-sizing: border-box; }
         .indicador-tabular { font-size: 14px; font-weight: bold; color: #0d47a1; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .bloco-qrcode-real { display: flex; justify-content: center; align-items: center; background: #ffffff; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); width: 260px; height: 260px; margin: 15px auto; box-sizing: border-box; }
-        .bloco-qrcode-real canvas { width: 100% !important; height: 100% !important; image-rendering: pixelated; }
+        .bloco-qrcode-real { display: flex; justify-content: center; align-items: center; background: #ffffff; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); width: 240px; height: 240px; margin: 15px auto; box-sizing: border-box; }
+        /* Força o Canvas microscópico a crescer mantendo o contraste perfeito dos pixels */
+        .bloco-qrcode-real canvas { width: 100% !important; height: 100% !important; image-rendering: pixelated; image-rendering: crisp-edges; }
         .txt-valor { font-size: 24px; font-weight: 900; color: #1e293b; margin: 10px 0; }
         .txt-destino { font-size: 11px; color: #64748b; margin-bottom: 10px; font-weight: 500; }
         .txt-separador { font-size: 11px; color: #64748b; font-weight: bold; margin-top: 15px; margin-bottom: 5px; text-align: left; width: 100%; }
@@ -44,7 +45,6 @@
     </div>
 
     <script>
-        // Função de desenho nativa em Canvas de baixa densidade (À prova de falhas)
         function desenharQrDireto(texto) {
             var canvas = document.getElementById("canvasQr");
             var ctx = canvas.getContext("2d");
@@ -56,7 +56,6 @@
             ctx.fillRect(0, 0, tamanho, tamanho);
             ctx.fillStyle = "#000000";
 
-            // Desenha os 3 marcadores estruturais do padrão de forma limpa
             var marcarCanto = function(cx, cy) {
                 for(var i=0; i<7; i++) {
                     for(var j=0; j<7; j++) {
@@ -68,7 +67,6 @@
             };
             marcarCanto(0,0); marcarCanto(tamanho-7,0); marcarCanto(0,tamanho-7);
 
-            // Gera os blocos lógicos locais baseados estritamente na string do Pix
             for (var x = 0; x < tamanho; x++) {
                 for (var y = 0; y < tamanho; y++) {
                     if ((x<8 && y<8) || (x<8 && y>=tamanho-8) || (x>=tamanho-8 && y<8)) continue;
@@ -96,6 +94,7 @@
             var valorInalterado = parseFloat(vf).toFixed(2);
             
             document.getElementById("view-valor").innerText = "R$ " + parseFloat(vf).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+            document.getElementById("view-destino").innerText = "Destino: " + CONFIG_NOME_FANTASIA;
 
             var bChave = "01" + String(chaveLimpa.length).padStart(2, '0') + chaveLimpa;
             var bGui = "0014br.gov.bcb.pix" + bChave;
@@ -112,7 +111,6 @@
 
             var pLivre = "000201" + bConta + "520400005303986" + bValor + "5802BR" + tagNomeTitular + tagCidadeLoja + bTxid + "6304";
             
-            // Tratamento matemático do CRC16 final
             var crc = 0xFFFF;
             for (var c = 0; c < pLivre.length; c++) {
                 crc ^= pLivre.charCodeAt(c) << 8;
@@ -131,7 +129,7 @@
             var campoTexto = document.getElementById("payloadTexto");
             campoTexto.select();
             navigator.clipboard.writeText(campoTexto.value);
-            alert("✅ Código Pix Copia e Cola copiado com sucesso!");
+            alert("¼ Código Pix Copia e Cola copiado com sucesso!");
         }
     </script>
 </body>
