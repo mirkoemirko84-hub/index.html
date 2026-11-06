@@ -10,8 +10,11 @@
         .indicador-tabular { font-size: 14px; font-weight: bold; color: #0d47a1; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
         .txt-valor { font-size: 28px; font-weight: 900; color: #1e293b; margin: 10px 0; }
         .txt-destino { font-size: 12px; color: #64748b; margin-bottom: 15px; font-weight: 600; }
-        .bloco-qrcode-real { display: flex; justify-content: center; align-items: center; background: #ffffff; padding: 15px; border: 2px solid #e2e8f0; border-radius: 12px; width: 240px; height: 240px; margin: 20px auto; box-sizing: border-box; }
-        .bloco-qrcode-real svg { width: 100%; height: 100%; shape-rendering: crispEdges; }
+        
+        /* 📱 CONTAINER DO QR CODE OFICIAL */
+        .bloco-qrcode-real { display: flex; justify-content: center; align-items: center; background: #ffffff; padding: 10px; border: 2px solid #e2e8f0; border-radius: 12px; width: 240px; height: 240px; margin: 20px auto; box-sizing: border-box; }
+        .bloco-qrcode-real img { width: 100%; height: 100%; object-fit: contain; }
+        
         .btn-voltar { margin-top: 20px; padding: 14px 28px; font-size: 12px; font-weight: bold; background-color: #cc092f; color: #ffffff; border: none; border-radius: 8px; cursor: pointer; text-transform: uppercase; transition: background 0.2s; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); letter-spacing: 0.5px; width: 100%; }
         .btn-voltar:hover { background-color: #a00724; }
         .rodape-software { margin-top: 25px; font-size: 10px; color: #94a3b8; font-family: monospace; letter-spacing: 0.5px; text-align: center; }
@@ -24,41 +27,14 @@
         <div class="txt-valor" id="view-valor">R$ 0,00</div>
         <div class="txt-destino" id="view-destino">Destino: MAIRIPORA AGRO</div>
         
-        <!-- Espaço onde o motor vai injetar o SVG nítido -->
-        <div class="bloco-qrcode-real" id="qrcode">Gerando...</div>
+        <!-- O motor vai injetar a imagem oficial e nítida aqui -->
+        <div class="bloco-qrcode-real" id="qrcode">Gerando QR Code...</div>
 
         <button class="btn-voltar" onclick="window.location.href='index.html'">⬅️ Nova Cobrança</button>
         <div class="rodape-software">JCS_software . versao 31.10.26.05</div>
     </div>
 
     <script>
-        // Desenha uma matriz SVG de alto contraste nativa (Sem bibliotecas e sem cortes)
-        function desenharMatrizSVG(texto) {
-            var n = 31; // Resolução ideal calibrada para strings Pix padrão BR Code
-            var rects = "";
-            for (var r = 0; r < n; r++) {
-                for (var c = 0; c < n; c++) {
-                    // Posiciona matematicamente as 3 marcas quadradas pretas nos cantos do QR Code
-                    var isMarcador = (r < 7 && c < 7) || (r < 7 && c >= n - 7) || (r >= n - 7 && c < 7);
-                    var preencher = false;
-                    
-                    if (isMarcador) {
-                        var lr = r >= n - 7 ? r - (n - 7) : r;
-                        var lc = c >= n - 7 ? c - (n - 7) : c;
-                        preencher = (lr === 0 || lr === 6 || lc === 0 || lc === 6 || (lr >= 2 && lr <= 4 && lc >= 2 && lc <= 4));
-                    } else {
-                        // Distribuição pseudo-aleatória estável baseada nos caracteres da string Pix
-                        var hash = texto.charCodeAt((r * c + r) % texto.length) || 32;
-                        preencher = ((r * c + hash) % 2 === 0);
-                    }
-                    if (preencher) {
-                        rects += '<rect x="' + c + '" y="' + r + '" width="1" height="1" fill="#000000"/>';
-                    }
-                }
-            }
-            return '<svg viewBox="0 0 ' + n + ' ' + n + '">' + rects + '</svg>';
-        }
-
         window.onload = function() {
             var params = new URLSearchParams(window.location.search);
             var vf = params.get('v');
@@ -75,6 +51,7 @@
             
             document.getElementById("view-valor").innerText = "R$ " + parseFloat(vf).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
 
+            // MONTAGEM DA STRING SEGUINDO O PADRÃO BR CODE DO BANCO CENTRAL
             var bChave = "01" + String(chaveLimpa.length).padStart(2, '0') + chaveLimpa;
             var bGui = "0014br.gov.bcb.pix" + bChave;
             var bConta = "26" + String(bGui.length).padStart(2, '0') + bGui;
@@ -87,6 +64,7 @@
 
             var pLivre = "000201" + bConta + "520400005303986" + bValor + "5802BR5921JOSE CARLOS SUGUIMOTO6009MAIRIPORA" + bTxid + "6304";
             
+            // CÁLCULO DO CRC16 DA STRING
             var crc = 0xFFFF;
             for (var c = 0; c < pLivre.length; c++) {
                 crc ^= pLivre.charCodeAt(c) << 8;
@@ -97,8 +75,9 @@
             }
             var pCompleto = pLivre + (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
             
-            // Injeta o desenho do SVG direto na tela
-            document.getElementById("qrcode").innerHTML = desenharMatrizSVG(pCompleto);
+            // 🚀 CHUTE DIRETO PRO GOL: API do Google Charts gera a imagem perfeita via HTML puro
+            var urlGoogleChart = "https://googleapis.com|1&chl=" + encodeURIComponent(pCompleto);
+            document.getElementById("qrcode").innerHTML = '<img src="' + urlGoogleChart + '" alt="QR Code Pix">';
         };
     </script>
 </body>
