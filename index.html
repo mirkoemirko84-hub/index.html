@@ -22,7 +22,6 @@
         .btn-gerar { background-color: #0d47a1; color: #ffffff; }
         .btn-gerar:hover { background-color: #0a3980; }
         
-        /* 📱 ÁREA DE SAÍDA RAPIDA (APARECE INLINE) */
         .bloco-copia-rapido { margin-top: 20px; padding-top: 15px; border-top: 2px dashed #e2e8f0; display: none; width: 100%; }
         .txt-aviso { font-size: 11px; color: #475569; font-weight: bold; text-align: left; margin-bottom: 6px; }
         .input-payload { width: 100%; padding: 10px; font-size: 11px; font-family: monospace; border: 1px solid #cbd5e1; border-radius: 6px; background-color: #f1f5f9; color: #334155; text-align: center; box-sizing: border-box; margin-bottom: 8px; }
@@ -58,7 +57,6 @@
             <button class="btn btn-gerar" onclick="irParaTelaDoQRCode()">Ver QR Code ➡️</button>
         </div>
 
-        <!-- SEÇÃO LIMPA SEM LINKS DUPLICADOS -->
         <div class="bloco-copia-rapido" id="areaCopiaRapida">
             <div class="txt-aviso">Ou pague com o Copia e Cola:</div>
             <input type="text" id="stringGerada" class="input-payload" readonly onclick="this.select();">
@@ -90,9 +88,9 @@
             var txIdLimpo = tx.replace(/[^a-zA-Z0-9]/g, '');
             if (txIdLimpo === "" || tx === "***") { txIdLimpo = "***"; }
             var bSub62 = "05" + String(txIdLimpo.length).padStart(2, '0') + txIdLimpo;
-            var bTxid = "62" + String(bSub62.length).padStart(2, '0') + bSub62;
+            var bSub62_completo = "62" + String(bSub62.length).padStart(2, '0') + bSub62;
 
-            var pLivre = "000201" + bConta + "520400005303986" + bValor + "5802BR5921JOSE CARLOS SUGUIMOTO6009MAIRIPORA" + bTxid + "6304";
+            var pLivre = "000201" + bConta + "520400005303986" + bValor + "5802BR5921JOSE CARLOS SUGUIMOTO6009MAIRIPORA" + bSub62_completo + "6304";
             
             var crc = 0xFFFF;
             for (var c = 0; c < pLivre.length; c++) {
@@ -118,11 +116,18 @@
             window.location.href = "pix.html?v=" + vf + "&ch=" + encodeURIComponent(CHAVE_FIXA) + "&tx=" + encodeURIComponent(tx);
         }
 
+        // FUNÇÃO DE CÓPIA BLINDADA E EXCLUSIVA DO CONTEÚDO DO INPUT
         function copiarCodigoRapido() {
             var campo = document.getElementById("stringGerada");
             campo.select();
-            navigator.clipboard.writeText(campo.value);
-            alert("✅ Pix Copia e Cola copiado!");
+            campo.setSelectionRange(0, 99999); // Garante a seleção total em celulares
+            try {
+                document.execCommand("copy"); // Método clássico de contingência altamente estável
+                alert("✅ Pix Copia e Cola copiado com sucesso!");
+            } catch (err) {
+                navigator.clipboard.writeText(campo.value);
+                alert("✅ Pix Copia e Cola copiado!");
+            }
         }
 
         function limparPainel() {
