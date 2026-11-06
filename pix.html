@@ -11,39 +11,32 @@
         .txt-valor { font-size: 28px; font-weight: 900; color: #1e293b; margin: 10px 0; }
         .txt-destino { font-size: 12px; color: #64748b; margin-bottom: 15px; font-weight: 600; }
         .bloco-qrcode-real { display: flex; justify-content: center; align-items: center; background: #ffffff; padding: 15px; border: 2px solid #e2e8f0; border-radius: 12px; width: 240px; height: 240px; margin: 20px auto; box-sizing: border-box; }
-        .bloco-qrcode-real canvas { width: 100% !important; height: 100% !important; image-rendering: pixelated; image-rendering: crisp-edges; }
-        .btn-voltar { margin-top: 20px; padding: 14px 28px; font-size: 12px; font-weight: bold; background-color: #cc092f; color: #ffffff; border: none; border-radius: 8px; cursor: pointer; text-transform: uppercase; transition: background 0.2s; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); letter-spacing: 0.5px; width: 100%; }
-        .btn-voltar:hover { background-color: #a00724; }
-        .rodape-software { margin-top: 25px; font-size: 10px; color: #94a3b8; font-family: monospace; letter-spacing: 0.5px; text-align: center; }
+        .bloco-qrcode-real canvas { width: 100% !important; height: 100% !important; image-rendering: pixelated; }
+        .btn-voltar { margin-top: 20px; padding: 14px 28px; font-size: 12px; font-weight: bold; background-color: #cc092f; color: #ffffff; border: none; border-radius: 8px; cursor: pointer; text-transform: uppercase; width: 100%; }
+        .rodape-software { margin-top: 25px; font-size: 10px; color: #94a3b8; font-family: monospace; text-align: center; }
     </style>
 </head>
 <body>
-
     <div class="container-pix">
         <div class="indicador-tabular">Aponte a Câmera do Banco ⬇️</div>
         <div class="txt-valor" id="view-valor">R$ 0,00</div>
-        <div class="txt-destino" id="view-destino">Destino: MAIRIPORA AGRO</div>
-        
+        <div class="txt-destino">Destino: MAIRIPORA AGRO</div>
         <div class="bloco-qrcode-real">
             <canvas id="canvasQr"></canvas>
         </div>
-
         <button class="btn-voltar" onclick="window.location.href='index.html'">⬅️ Nova Cobrança</button>
         <div class="rodape-software">JCS_software . versao 31.10.26.05</div>
     </div>
-
     <script>
         function desenharQrNativo(texto) {
             var canvas = document.getElementById("canvasQr");
             var ctx = canvas.getContext("2d");
-            var tamanho = 29; 
-            canvas.width = tamanho;
-            canvas.height = tamanho;
-
+            var n = 33; 
+            canvas.width = n;
+            canvas.height = n;
             ctx.fillStyle = "#ffffff";
-            ctx.fillRect(0, 0, tamanho, tamanho);
+            ctx.fillRect(0, 0, n, n);
             ctx.fillStyle = "#000000";
-
             var marcarCanto = function(cx, cy) {
                 for(var i=0; i<7; i++) {
                     for(var j=0; j<7; j++) {
@@ -53,44 +46,33 @@
                     }
                 }
             };
-            marcarCanto(0,0); marcarCanto(tamanho-7,0); marcarCanto(0,tamanho-7);
-
-            for (var x = 0; x < tamanho; x++) {
-                for (var y = 0; y < tamanho; y++) {
-                    if ((x<8 && y<8) || (x<8 && y>=tamanho-8) || (x>=tamanho-8 && y<8)) continue;
-                    var idx = (x * y + y) % texto.length;
-                    if ((texto.charCodeAt(idx) + x + y) % 3 === 0) {
+            marcarCanto(0,0); marcarCanto(n-7,0); marcarCanto(0,n-7);
+            for (var x = 0; x < n; x++) {
+                for (var y = 0; y < n; y++) {
+                    if ((x<8 && y<8) || (x<8 && y>=n-8) || (x>=n-8 && y<8)) continue;
+                    var idx = (x * y + y + x) % texto.length;
+                    if ((texto.charCodeAt(idx) + x + y) % 2 === 0) {
                         ctx.fillRect(x, y, 1, 1);
                     }
                 }
             }
         }
-
         window.onload = function() {
             var params = new URLSearchParams(window.location.search);
             var vf = params.get('v');
             var ch = params.get('ch');
             var tx = params.get('tx');
-
             if(!vf || !ch) { return; }
-
-            var chaveLimpa = ch.trim();
             var valorInalterado = parseFloat(vf).toFixed(2);
-            
             document.getElementById("view-valor").innerText = "R$ " + parseFloat(vf).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-
-            var bChave = "01" + String(chaveLimpa.length).padStart(2, '0') + chaveLimpa;
+            var bChave = "0122" + ch.trim();
             var bGui = "0014br.gov.bcb.pix" + bChave;
             var bConta = "26" + String(bGui.length).padStart(2, '0') + bGui;
             var bValor = "54" + String(valorInalterado.length).padStart(2, '0') + valorInalterado;
-            
-            var txIdLimpo = tx ? tx.replace(/[^a-zA-Z0-9]/g, '') : "";
-            if (txIdLimpo === "" || tx === "***") { txIdLimpo = "***"; }
+            var txIdLimpo = tx ? tx.replace(/[^a-zA-Z0-9]/g, '') : "***";
             var bSub62 = "05" + String(txIdLimpo.length).padStart(2, '0') + txIdLimpo;
             var bTxid = "62" + String(bSub62.length).padStart(2, '0') + bSub62;
-
             var pLivre = "000201" + bConta + "520400005303986" + bValor + "5802BR5921JOSE CARLOS SUGUIMOTO6009MAIRIPORA" + bTxid + "6304";
-            
             var crc = 0xFFFF;
             for (var c = 0; c < pLivre.length; c++) {
                 crc ^= pLivre.charCodeAt(c) << 8;
@@ -100,7 +82,6 @@
                 }
             }
             var pCompleto = pLivre + (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
-            
             desenharQrNativo(pCompleto);
         };
     </script>
