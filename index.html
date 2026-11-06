@@ -16,20 +16,18 @@
         .campo-grupo input { width: 100%; padding: 12px; font-size: 14px; border: 1px solid #cbd5e1; border-radius: 8px; background-color: #f8fafc; color: #1e293b; box-sizing: border-box; font-weight: 500; }
         .campo-grupo input:focus { border-color: #0284c7; outline: none; background-color: #ffffff; }
         .botoes-linha { display: flex; gap: 10px; margin-top: 20px; }
-        .btn { flex: 1; padding: 14px; font-size: 12px; font-weight: 700; border: none; border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s; text-align: center; }
+        .btn { flex: 1; padding: 14px; font-size: 12px; font-weight: 700; border: none; border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s; text-align: center; text-decoration: none; }
         .btn-limpar { background-color: #e2e8f0; color: #475569; }
         .btn-limpar:hover { background-color: #cbd5e1; }
         .btn-gerar { background-color: #0d47a1; color: #ffffff; }
         .btn-gerar:hover { background-color: #0a3980; }
         
-        /* 📱 ÁREA DE SAÍDA RAPIDA (SÓ APARECE QUANDO DIGITA O VALOR) */
+        /* 📱 ÁREA DE SAÍDA RAPIDA (APARECE INLINE) */
         .bloco-copia-rapido { margin-top: 20px; padding-top: 15px; border-top: 2px dashed #e2e8f0; display: none; width: 100%; }
         .txt-aviso { font-size: 11px; color: #475569; font-weight: bold; text-align: left; margin-bottom: 6px; }
         .input-payload { width: 100%; padding: 10px; font-size: 11px; font-family: monospace; border: 1px solid #cbd5e1; border-radius: 6px; background-color: #f1f5f9; color: #334155; text-align: center; box-sizing: border-box; margin-bottom: 8px; }
-        .btn-copiar-action { width: 100%; padding: 12px; font-size: 12px; font-weight: bold; background-color: #0284c7; color: #ffffff; border: none; border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+        .btn-copiar-action { width: 100%; padding: 12px; font-size: 12px; font-weight: bold; background-color: #0284c7; color: #ffffff; border: none; border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; }
         .btn-copiar-action:hover { background-color: #0369a1; }
-        .link-qrcode-avancar { display: block; font-size: 12px; font-weight: bold; color: #cc092f; text-decoration: none; padding: 12px; border: 1px solid #fca5a5; background: #fff5f5; border-radius: 8px; text-align: center; margin-top: 5px; transition: all 0.2s; }
-        .link-qrcode-avancar:hover { background: #fee2e2; }
         .rodape-software { margin-top: 20px; font-size: 10px; color: #94a3b8; font-family: monospace; letter-spacing: 0.5px; text-align: center; }
     </style>
 </head>
@@ -57,15 +55,14 @@
 
         <div class="botoes-linha">
             <button class="btn btn-limpar" onclick="limparPainel()">Limpar</button>
-            <button class="btn btn-gerar" onclick="irParaTelaDoQRCode()">Ver QR Code</button>
+            <button class="btn btn-gerar" onclick="irParaTelaDoQRCode()">Ver QR Code ➡️</button>
         </div>
 
-        <!-- SEÇÃO LIMPA DO COPIA E COLA EXPEDIDO -->
+        <!-- SEÇÃO LIMPA SEM LINKS DUPLICADOS -->
         <div class="bloco-copia-rapido" id="areaCopiaRapida">
             <div class="txt-aviso">Ou pague com o Copia e Cola:</div>
             <input type="text" id="stringGerada" class="input-payload" readonly onclick="this.select();">
             <button class="btn-copiar-action" onclick="copiarCodigoRapido()">📋 Copiar Código Pix</button>
-            <a href="#" id="linkSeguirPagamento" class="link-qrcode-avancar">👉 Ver QR Code Visual na Tela 2</a>
         </div>
         
         <div class="rodape-software">JCS_software . versao 31.10.26.05</div>
@@ -109,7 +106,6 @@
             
             document.getElementById("stringGerada").value = stringFinal;
             areaCopia.style.display = "block";
-            document.getElementById("linkSeguirPagamento").href = "pix.html?v=" + vf + "&ch=" + encodeURIComponent(CHAVE_FIXA) + "&tx=" + encodeURIComponent(tx);
         }
 
         function irParaTelaDoQRCode() {
