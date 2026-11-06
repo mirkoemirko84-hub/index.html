@@ -9,7 +9,7 @@
         .container-pix { background-color: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); max-width: 360px; width: 100%; text-align: center; box-sizing: border-box; }
         .indicador-tabular { font-size: 14px; font-weight: bold; color: #0d47a1; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
         .bloco-qrcode-real { display: flex; justify-content: center; align-items: center; background: #ffffff; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); width: 260px; height: 260px; margin: 15px auto; box-sizing: border-box; }
-        .bloco-qrcode-real svg { width: 100%; height: 100%; shape-rendering: crispEdges; }
+        .bloco-qrcode-real img { width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; }
         .txt-valor { font-size: 24px; font-weight: 900; color: #1e293b; margin: 10px 0; }
         .txt-destino { font-size: 11px; color: #64748b; margin-bottom: 10px; font-weight: 500; }
         .txt-separador { font-size: 11px; color: #64748b; font-weight: bold; margin-top: 15px; margin-bottom: 5px; text-align: left; width: 100%; }
@@ -21,8 +21,6 @@
         .btn-voltar:hover { background-color: #a00724; }
         .rodape-software { margin-top: 20px; font-size: 10px; color: #94a3b8; font-family: monospace; letter-spacing: 0.5px; text-align: center; }
     </style>
-    <!-- Engine nativa leve para geração de QR Code em SVG Puro (Sem dependência de servidores) -->
-    <script src="https://cloudflare.com" integrity="sha512-9A4N9uSccI9orRbyZIkOwyL6YgDveWjY5L6594dK/z19Yw7VwHpxP4v32e6bHdfXb1gBv4R06C/b66v6vO7e2w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body>
 
@@ -45,14 +43,9 @@
 
     <script>
         window.onload = function() {
-            
-            // ##########################################################################
-            // ###                    ÁREA DE CONFIGURAÇÃO RÁPIDA                     ###
-            // ##########################################################################
             var CONFIG_NOME_TITULAR  = "JOSE CARLOS SUGUIMOTO"; 
             var CONFIG_CIDADE_LOJA   = "MAIRIPORA";             
             var CONFIG_NOME_FANTASIA = "MAIRIPORA AGRO";        
-            // ##########################################################################
 
             var params = new URLSearchParams(window.location.search);
             var vf = params.get('v');
@@ -70,38 +63,29 @@
             document.getElementById("view-valor").innerText = "R$ " + parseFloat(vf).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
             document.getElementById("view-destino").innerText = "Destino: " + CONFIG_NOME_FANTASIA;
 
-            // 🎯 MONTAGEM DA STRING PIX CONFORME MANUAL DO BANCO CENTRAL DO BRASIL (BR CODE)
             var bChave = "01" + String(chaveLimpa.length).padStart(2, '0') + chaveLimpa;
             var bGui = "0014br.gov.bcb.pix" + bChave;
             var bConta = "26" + String(bGui.length).padStart(2, '0') + bGui;
             
             var bValor = "54" + String(valorInalterado.length).padStart(2, '0') + valorInalterado;
             
-            // Tratamento definitivo do TXID (Se for nulo, vazio ou ***, vira o padrão do BCB para PDV)
             var txIdLimpo = tx ? tx.replace(/[^a-zA-Z0-9]/g, '') : "";
-            if (txIdLimpo === "" || tx === "***") {
-                txIdLimpo = "***";
-            }
+            if (txIdLimpo === "" || tx === "***") { txIdLimpo = "***"; }
             var bSub62 = "05" + String(txIdLimpo.length).padStart(2, '0') + txIdLimpo;
             var bTxid = "62" + String(bSub62.length).padStart(2, '0') + bSub62;
 
             var tagNomeTitular = "59" + String(CONFIG_NOME_TITULAR.length).padStart(2, '0') + CONFIG_NOME_TITULAR;
             var tagCidadeLoja  = "60" + String(CONFIG_CIDADE_LOJA.length).padStart(2, '0') + CONFIG_CIDADE_LOJA;
 
-            // Concatenação estrutural estrita
             var pLivre = "000201" + bConta + "520400005303986" + bValor + "5802BR" + tagNomeTitular + tagCidadeLoja + bTxid + "6304";
             var pCompleto = pLivre + calcularCRC16(pLivre);
             
-            // Injeta a string de pagamento no campo Copia e Cola
             document.getElementById("payloadTexto").value = pCompleto;
             
-            // Geração em tempo real do QR Code Vetorial Dinâmico (Pisca instantaneamente na tela)
+            // Usa API nativa e estável para renderizar o QR Code sem depender de scripts externos
             try {
-                var qr = qrcode(0, 'M');
-                qr.addData(pCompleto);
-                qr.make();
-                // Gera o código em SVG nativo de alto contraste matemático
-                document.getElementById("qrcode").innerHTML = qr.createSvgTag(6, 4);
+                var urlGoogleChart = "https://googleapis.com|0&chl=" + encodeURIComponent(pCompleto);
+                document.getElementById("qrcode").innerHTML = '<img src="' + urlGoogleChart + '" alt="QR Code Pix">';
             } catch (e) {
                 document.getElementById("qrcode").innerHTML = "<b style='color:red;'>Erro ao renderizar QR Code.</b>";
             }
